@@ -9,4 +9,10 @@
   <artifactId>iMage</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <repositories>
+ 	<repository>
+ 	  <id>ipdNexus</id>
+ 	  <url>http://bob.ipd.kit.edu/nexus/content/repositories/swt1</url>
+ 	</repository>
+  </repositories>
 </project>
