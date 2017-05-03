@@ -23,6 +23,9 @@
 			<includes>
 				<include>changelog.xml</include>
 				<include>changelog.html</include>
+				<include>.gitignore</include>
+				<include>checkstyle.launch</include>
+				<include>integration-test.launch</include>
 			</includes>
 			<outputDirectory>docs</outputDirectory>
 		</fileSet>
