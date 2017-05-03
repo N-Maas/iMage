@@ -9,8 +9,13 @@
 	</formats>
 	<fileSets>
 		<fileSet>
+		<useDefaultExcludes>false</useDefaultExcludes>
 			<includes>
 				<include>pom.xml</include>
+				<include>checkstyle.launch</include>
+				<include>integration-test.launch</include>
+				<include>.gitignore</include>
+				<include>LICENSE</include>
 			</includes>
 		</fileSet>
 
@@ -23,9 +28,6 @@
 			<includes>
 				<include>changelog.xml</include>
 				<include>changelog.html</include>
-				<include>.gitignore</include>
-				<include>checkstyle.launch</include>
-				<include>integration-test.launch</include>
 			</includes>
 			<outputDirectory>docs</outputDirectory>
 		</fileSet>
