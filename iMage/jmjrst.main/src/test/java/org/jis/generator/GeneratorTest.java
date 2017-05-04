@@ -47,4 +47,29 @@ public class GeneratorTest {
 		generator.rotateImage(image, 0.7);
 	}
 
+	@Test
+	public void actualRotationTest() {
+		BufferedImage rotate90 = generator.rotateImage(image, Generator.ROTATE_90);
+		assertEquals(image.getWidth(), rotate90.getHeight());
+		assertEquals(image.getHeight(), rotate90.getWidth());
+		
+		// testing whether it is the same (rotated) image
+		for(int i = 0; i < image.getWidth(); i += 10) {
+			for(int j = 0; j < image.getHeight(); j += 10) {
+				assertEquals(image.getRGB(i, j), rotate90.getRGB(image.getHeight() - 1 - j, i));
+			}
+		}
+		
+		BufferedImage rotate270 = generator.rotateImage(image, Generator.ROTATE_270);
+		assertEquals(image.getWidth(), rotate270.getHeight());
+		assertEquals(image.getHeight(), rotate270.getWidth());
+		
+		// testing whether it is the same (rotated) image
+		for(int i = 0; i < image.getWidth(); i += 10) {
+			for(int j = 0; j < image.getHeight(); j += 10) {
+				assertEquals(image.getRGB(i, j), rotate270.getRGB(j, image.getWidth() - 1 - i));
+			}
+		}
+	}
+
 }
