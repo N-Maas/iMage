@@ -42,4 +42,9 @@ public class GeneratorTest {
 		assertEquals(image, generator.rotateImage(image, 0.0));
 	}
 
+	@Test(expected=IllegalArgumentException.class)
+	public void illegalRotationTest() {
+		generator.rotateImage(image, 0.7);
+	}
+
 }
