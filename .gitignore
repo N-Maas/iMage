@@ -31,3 +31,6 @@ bin/
 
 # Windows
 Thumbs.db
+
+# a .recommenders directory occured
+/.recommenders/
