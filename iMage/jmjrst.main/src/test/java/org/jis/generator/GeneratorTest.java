@@ -24,7 +24,6 @@ public class GeneratorTest {
 		ImageInputStream iis;
 		try {
 			File picture = new File(".\\src\\test\\resources\\picture.jpg");
-			System.out.println(picture.getPath());
 			assertTrue(picture.exists());
 			iis = ImageIO.createImageInputStream(picture);
 			ImageReader reader = ImageIO.getImageReadersByFormatName("jpg").next();
@@ -35,11 +34,12 @@ public class GeneratorTest {
 			e.printStackTrace();
 			fail("IOException reading picture.");
 		}
-
 	}
 
 	@Test
-	public void test() {
+	public void basicRotationTest() {
+		assertNull(generator.rotateImage(null, 0.0));
+		assertEquals(image, generator.rotateImage(image, 0.0));
 	}
 
 }
