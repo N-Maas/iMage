@@ -59,26 +59,26 @@ import org.jis.view.dialog.OptionsEdit;
  * The Main Class is the Entry Point of the Application and build the GUI
  * </p>
  */
-public class Main extends JFrame {
+public final class Main extends JFrame {
   private static final long serialVersionUID = 5124271743719044219L;
 
   private Options           o;
   private Preview           preview          = null;
   private JScrollPane       jsp              = new JScrollPane();
-  private JTextPane          text             = new JTextPane();
-  private List               list             = new List(preview);
-  private Menu               menu             = null;
-  private Toolbar            toolBar          = null;
-  private Generator          generator;
-  private Status             status           = null;
-  private boolean            error            = false;
-  private Messages           mes              = null;
-  private StyledDocument     jOutputDoc;
-  private SimpleAttributeSet outputAtr        = new SimpleAttributeSet();
-  private SimpleAttributeSet readyAtr         = new SimpleAttributeSet();
-  private SimpleAttributeSet errorAtr         = new SimpleAttributeSet();
-  private SimpleAttributeSet fileAtr          = new SimpleAttributeSet();
-  private ProgressMonitor    p_monitor        = null;
+  public JTextPane          text             = new JTextPane();
+  public List               list             = new List(preview);
+  public Menu               menu             = null;
+  public Toolbar            toolBar          = null;
+  public Generator          generator;
+  public Status             status           = null;
+  public boolean            error            = false;
+  public Messages           mes              = null;
+  public StyledDocument     jOutputDoc;
+  public SimpleAttributeSet outputAtr        = new SimpleAttributeSet();
+  public SimpleAttributeSet readyAtr         = new SimpleAttributeSet();
+  public SimpleAttributeSet errorAtr         = new SimpleAttributeSet();
+  public SimpleAttributeSet fileAtr          = new SimpleAttributeSet();
+  public ProgressMonitor    p_monitor        = null;
 
   private Main() {
     super();
