@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
 public class Messages implements Serializable {
   private static final long serialVersionUID = -3129495340668876130L;
 
-  private final String   BUNDLE_NAME = "org.jis.messages";
+  private static final String   BUNDLE_NAME = "org.jis.messages";
 
   private ResourceBundle RESOURCE_BUNDLE;
 

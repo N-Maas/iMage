@@ -65,20 +65,20 @@ public class Main extends JFrame {
   private Options           o;
   private Preview           preview          = null;
   private JScrollPane       jsp              = new JScrollPane();
-  public JTextPane          text             = new JTextPane();
-  public List               list             = new List(preview);
-  public Menu               menu             = null;
-  public Toolbar            toolBar          = null;
-  public Generator          generator;
-  public Status             status           = null;
-  public boolean            error            = false;
-  public Messages           mes              = null;
-  public StyledDocument     jOutputDoc;
-  public SimpleAttributeSet outputAtr        = new SimpleAttributeSet();
-  public SimpleAttributeSet readyAtr         = new SimpleAttributeSet();
-  public SimpleAttributeSet errorAtr         = new SimpleAttributeSet();
-  public SimpleAttributeSet fileAtr          = new SimpleAttributeSet();
-  public ProgressMonitor    p_monitor        = null;
+  private JTextPane          text             = new JTextPane();
+  private List               list             = new List(preview);
+  private Menu               menu             = null;
+  private Toolbar            toolBar          = null;
+  private Generator          generator;
+  private Status             status           = null;
+  private boolean            error            = false;
+  private Messages           mes              = null;
+  private StyledDocument     jOutputDoc;
+  private SimpleAttributeSet outputAtr        = new SimpleAttributeSet();
+  private SimpleAttributeSet readyAtr         = new SimpleAttributeSet();
+  private SimpleAttributeSet errorAtr         = new SimpleAttributeSet();
+  private SimpleAttributeSet fileAtr          = new SimpleAttributeSet();
+  private ProgressMonitor    p_monitor        = null;
 
   private Main() {
     super();
@@ -100,13 +100,10 @@ public class Main extends JFrame {
     GraphicsDevice gd = gs[0];
     GraphicsConfiguration gc = gd.getDefaultConfiguration();
 
-    try
-    {
+    try {
       UIManager.setLookAndFeel(o.getLookAndFeel());
       SwingUtilities.updateComponentTreeUI(this);
-    }
-    catch (Exception l)
-    {
+    } catch (Exception l) {
     }
 
     Rectangle bounds = gc.getBounds();
@@ -140,13 +137,10 @@ public class Main extends JFrame {
     StyleConstants.setForeground(readyAtr, Color.BLUE);
     StyleConstants.setForeground(errorAtr, Color.RED);
     StyleConstants.setForeground(fileAtr, Color.GREEN);
-    try
-    {
+    try {
       jOutputDoc.insertString(jOutputDoc.getLength(), mes.getString("Main.2") + Options.ls, readyAtr);
       text.setCaretPosition(jOutputDoc.getLength());
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
     }
 
     jsp = new JScrollPane(text);
