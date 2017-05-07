@@ -72,4 +72,18 @@ public class GeneratorTest {
 		}
 	}
 
+	@Test
+	public void rotate180Test() {
+		BufferedImage rotate180 = generator.rotateImage(image, Math.toRadians(180));
+		assertEquals(image.getWidth(), rotate180.getWidth());
+		assertEquals(image.getHeight(), rotate180.getHeight());
+		
+		// testing whether it is the same (rotated) image
+		for(int i = 0; i < image.getWidth(); i += 10) {
+			for(int j = 0; j < image.getHeight(); j += 10) {
+				assertEquals(image.getRGB(i, j), rotate180.getRGB(image.getWidth() - 1 - j, image.getHeight() - 1 - i));
+			}
+		}
+	}
+
 }
