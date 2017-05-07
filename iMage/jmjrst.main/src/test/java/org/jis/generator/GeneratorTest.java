@@ -49,7 +49,7 @@ public class GeneratorTest {
 
 	@Test
 	public void actualRotationTest() {
-		BufferedImage rotate90 = generator.rotateImage(image, Generator.ROTATE_90);
+		BufferedImage rotate90 = generator.rotateImage(image, Math.toRadians(90));
 		assertEquals(image.getWidth(), rotate90.getHeight());
 		assertEquals(image.getHeight(), rotate90.getWidth());
 		
@@ -60,7 +60,7 @@ public class GeneratorTest {
 			}
 		}
 		
-		BufferedImage rotate270 = generator.rotateImage(image, Generator.ROTATE_270);
+		BufferedImage rotate270 = generator.rotateImage(image, Math.toRadians(270));
 		assertEquals(image.getWidth(), rotate270.getHeight());
 		assertEquals(image.getHeight(), rotate270.getWidth());
 		
