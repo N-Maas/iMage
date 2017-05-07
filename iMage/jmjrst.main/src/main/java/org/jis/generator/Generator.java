@@ -67,6 +67,7 @@ import org.jis.options.Options;
  */
 public class Generator {
   public final static double ROTATE_90  = Math.toRadians(90);
+  public final static double ROTATE_180  = Math.toRadians(180);
   public final static double ROTATE_270 = Math.toRadians(270);
 
   private Main               m;
@@ -734,6 +735,12 @@ public class Generator {
       width = image.getHeight(); // swap
       height = image.getWidth();
     }
+    else if (rotate == Generator.ROTATE_180)
+    {
+      transform.translate(width, height);
+      transform.rotate(Generator.ROTATE_180);
+      // no swap
+    }
     else if (rotate == Generator.ROTATE_270)
     {
       transform.translate(0, width);
@@ -749,6 +756,7 @@ public class Generator {
     // Return a new Image
     BufferedImage returnImage = new BufferedImage(width, height, image.getColorModel().getColorSpace().getType());
     Graphics2D g = returnImage.createGraphics();
+    g.drawImage(image, 0, 0, null);
     g.drawImage(image, transform, null);
 
     return returnImage;

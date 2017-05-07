@@ -81,7 +81,7 @@ public class GeneratorTest {
 		// testing whether it is the same (rotated) image
 		for(int i = 0; i < image.getWidth(); i += 10) {
 			for(int j = 0; j < image.getHeight(); j += 10) {
-				assertEquals(image.getRGB(i, j), rotate180.getRGB(image.getWidth() - 1 - j, image.getHeight() - 1 - i));
+				assertEquals(image.getRGB(i, j), rotate180.getRGB(image.getWidth() - 1 - i, image.getHeight() - 1 - j));
 			}
 		}
 	}
