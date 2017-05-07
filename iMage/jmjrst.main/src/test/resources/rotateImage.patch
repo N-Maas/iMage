@@ -1,0 +1,25 @@
+diff --git a/iMage/jmjrst.main/src/main/java/org/jis/generator/Generator.java b/iMage/jmjrst.main/src/main/java/org/jis/generator/Generator.java
+index 975f348..555c191 100644
+--- a/iMage/jmjrst.main/src/main/java/org/jis/generator/Generator.java
++++ b/iMage/jmjrst.main/src/main/java/org/jis/generator/Generator.java
+@@ -67,6 +67,7 @@ import org.jis.options.Options;
+  */
+ public class Generator {
+   public final static double ROTATE_90  = Math.toRadians(90);
++  public final static double ROTATE_180  = Math.toRadians(180);
+   public final static double ROTATE_270 = Math.toRadians(270);
+ 
+   private Main               m;
+@@ -734,6 +735,12 @@ public class Generator {
+       width = image.getHeight(); // swap
+       height = image.getWidth();
+     }
++    else if (rotate == Generator.ROTATE_180)
++    {
++      transform.translate(width, height);
++      transform.rotate(Generator.ROTATE_180);
++      // no swap
++    }
+     else if (rotate == Generator.ROTATE_270)
+     {
+       transform.translate(0, width);

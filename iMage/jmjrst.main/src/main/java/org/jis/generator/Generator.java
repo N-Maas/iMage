@@ -756,7 +756,6 @@ public class Generator {
     // Return a new Image
     BufferedImage returnImage = new BufferedImage(width, height, image.getColorModel().getColorSpace().getType());
     Graphics2D g = returnImage.createGraphics();
-    g.drawImage(image, 0, 0, null);
     g.drawImage(image, transform, null);
 
     return returnImage;
