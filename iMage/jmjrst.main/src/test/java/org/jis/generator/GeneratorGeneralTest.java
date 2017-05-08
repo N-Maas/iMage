@@ -138,4 +138,14 @@ public class GeneratorGeneralTest {
 		assertEquals(300, testImage.getWidth());
 		assertEquals(400, testImage.getHeight());
 	}
+
+	@Ignore
+	@Test
+	public void fileDegreeRotationTest(){
+		this.writeToFile();
+		generator.rotate(path, 270);
+		BufferedImage testImage = this.readImage(path);
+		assertEquals(300, testImage.getWidth());
+		assertEquals(400, testImage.getHeight());
+	}
 }
