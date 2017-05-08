@@ -18,6 +18,7 @@ import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GeneratorGeneralTest {
@@ -126,5 +127,15 @@ public class GeneratorGeneralTest {
 		BufferedImage testImage = this.readImage(new File(DIRECTORY, "generated_" + path.getName()));
 		assertEquals(800, testImage.getWidth());
 		assertEquals(600, testImage.getHeight());
+	}
+	
+	@Ignore
+	@Test
+	public void fileRotationTest(){
+		this.writeToFile();
+		generator.rotate(path);
+		BufferedImage testImage = this.readImage(path);
+		assertEquals(300, testImage.getWidth());
+		assertEquals(400, testImage.getHeight());
 	}
 }
