@@ -1,6 +1,9 @@
 package org.jis.generator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -21,6 +24,13 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+/**
+ * Test class for task 3, testing several methods of Generator. Some tests need
+ * to be ignored, as some methods of Generator do not work properly.
+ * 
+ * @author Nikolai
+ *
+ */
 public class GeneratorGeneralTest {
 	private static final File DIRECTORY = new File(".\\target\\data_test\\");
 	private Generator generator;
@@ -85,7 +95,8 @@ public class GeneratorGeneralTest {
 	}
 
 	/**
-	 * Tests rotating with a null argument and rotating by 0°.
+	 * Tests {@link Generator#rotateImage(BufferedImage, double)} with a null
+	 * argument and rotating by 0°, 180°, 90°.
 	 */
 	@Test
 	public void rotationTest() {
@@ -115,23 +126,34 @@ public class GeneratorGeneralTest {
 		}
 	}
 
+	/**
+	 * Tests
+	 * {@link Generator#generateImage(File, File, boolean, int, int, String)} by
+	 * scaling to double size.
+	 */
 	@Test
 	public void generateImageTest() {
 		this.writeToFile();
+		File newPath = null;
 		try {
-			generator.generateImage(path, DIRECTORY, false, 800, 600, "generated_");
+			newPath = generator.generateImage(path, DIRECTORY, false, 800, 600, "generated_");
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail("Unexpected Exception.");
 		}
-		BufferedImage testImage = this.readImage(new File(DIRECTORY, "generated_" + path.getName()));
+		assertEquals(new File(DIRECTORY, "generated_" + path.getName()), newPath);
+		BufferedImage testImage = this.readImage(newPath);
 		assertEquals(800, testImage.getWidth());
 		assertEquals(600, testImage.getHeight());
 	}
-	
+
+	/**
+	 * Tests {@link Generator#rotate(File)}. Needs to be ignored, as an
+	 * unexpected NullPointerException is thrown.
+	 */
 	@Ignore
 	@Test
-	public void fileRotationTest(){
+	public void fileRotationTest() {
 		this.writeToFile();
 		generator.rotate(path);
 		BufferedImage testImage = this.readImage(path);
@@ -139,9 +161,13 @@ public class GeneratorGeneralTest {
 		assertEquals(400, testImage.getHeight());
 	}
 
+	/**
+	 * Tests {@link Generator#rotate(File, int)} with rotation of 270°. Needs to
+	 * be ignored, as an unexpected NullPointerException is thrown.
+	 */
 	@Ignore
 	@Test
-	public void fileDegreeRotationTest(){
+	public void fileDegreeRotationTest() {
 		this.writeToFile();
 		generator.rotate(path, 270);
 		BufferedImage testImage = this.readImage(path);
