@@ -6,23 +6,40 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Modifies an image by iteratively reconstructing it with triangles.
+ *
+ * @version 1.0
+ */
 public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 	private static final int RED_SPACE = 255;
 	private static final int GREEN_SPACE = 255 << 8;
 	private static final int BLUE_SPACE = 255 << 16;
 	private static final int ALPHA_SPACE = 255 << 24;
 
+	/**
+	 * Constructs the filter within the specified point generator.
+	 *
+	 * @param pointGenerator
+	 *            the pointGenerator
+	 */
 	public TrianglePictureFilter(IPointGenerator pointGenerator) {
 		super(pointGenerator);
 	}
 
 	@Override
 	protected Color calculateColor(BufferedImage image, IPrimitive primitive) {
+		// System.out.println("Left: " +
+		// primitive.getBoundingBox().getUpperLeftCorner() + ", Right: "
+		// + primitive.getBoundingBox().getLowerRightCorner());
 		long red = 0;
 		long green = 0;
 		long blue = 0;
 		long alpha = 0;
 		List<Point> points = TrianglePictureFilter.calculateInsidePoints(primitive);
+		if (points.size() == 0) {
+			return Color.BLACK;
+		}
 
 		for (Point p : points) {
 			long argb = Integer.toUnsignedLong(image.getRGB(p.x, p.y));
@@ -38,10 +55,26 @@ public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 
 	@Override
 	public BufferedImage apply(BufferedImage image, int numberOfIterations, int numberOfSamples) {
-		/*
-		 * YOUR SOLUTION HERE
-		 */
-		return null;
+		if (numberOfIterations < 1 || numberOfSamples < 1) {
+			throw new IllegalArgumentException("Numbers must be greater 0.");
+		}
+
+		BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+		for (int i = 0; i < numberOfIterations; i++) {
+			int minDiff = Integer.MAX_VALUE;
+			IPrimitive minPrimitive = null;
+			for (int j = 0; j < numberOfSamples; j++) {
+				IPrimitive testPrim = this.generatePrimitive();
+				testPrim.setColor(this.calculateColor(image, testPrim));
+				int diff = this.calculateDifference(image, newImage, testPrim);
+				if (diff < minDiff) {
+					minDiff = diff;
+					minPrimitive = testPrim;
+				}
+			}
+			this.addToImage(newImage, minPrimitive);
+		}
+		return newImage;
 	}
 
 	@Override
