@@ -2,6 +2,8 @@ package org.iMage.geometrify;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
 
 /**
  * A triangle.
@@ -10,6 +12,8 @@ import java.awt.Point;
  * @version 1.0
  */
 public class Triangle implements IPrimitive {
+	private final Polygon polygon;
+	private Color color;
 
 	/**
 	 * Creates a new triangle from the given vertices.
@@ -22,39 +26,34 @@ public class Triangle implements IPrimitive {
 	 *            the third vertex
 	 */
 	public Triangle(Point a, Point b, Point c) {
-		/*
-		 * YOUR SOLUTION HERE
-		 */
+		this.polygon = new Polygon();
+		this.polygon.addPoint(a.x, a.y);
+		this.polygon.addPoint(b.x, b.y);
+		this.polygon.addPoint(c.x, c.y);
 	}
 
 	@Override
 	public boolean isInsidePrimitive(Point p) {
-		/*
-		 * YOUR SOLUTION HERE
-		 */
-		return false;
+		return this.polygon.contains(p);
 	}
 
 	@Override
 	public BoundingBox getBoundingBox() {
-		/*
-		 * YOUR SOLUTION HERE
-		 */
-		return null;
+		Rectangle bounds = this.polygon.getBounds();
+		return new BoundingBox(new Point(bounds.x, bounds.y),
+				new Point(bounds.x + bounds.width, bounds.y + bounds.height));
 	}
 
 	@Override
 	public Color getColor() {
-		/*
-		 * YOUR SOLUTION HERE
-		 */
-		return null;
+		if (this.color == null) {
+			throw new IllegalStateException("Color is not set.");
+		}
+		return this.color;
 	}
 
 	@Override
 	public void setColor(Color c) {
-		/*
-		 * YOUR SOLUTION HERE
-		 */
+		this.color = c;
 	}
 }
