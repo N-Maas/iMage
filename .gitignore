@@ -34,3 +34,6 @@ Thumbs.db
 
 # a .recommenders directory occured
 /.recommenders/
+
+# lastsheft is not task of master branch
+/iMage.lastenheft/
