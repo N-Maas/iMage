@@ -21,6 +21,8 @@ public class TrianglePictureFilterTest {
 	private static final File TEST_NO_ALPHA = new File("./src/test/resources/no_alpha.png");
 	private static final File TEST_ALPHA = new File("./src/test/resources/alpha.png");
 	private static final File TEST_COLOR = new File("./src/test/resources/color.png");
+	private static final File GENERATE_NO_ALPHA = new File("./target/data_test/generate_no_alpha.png");
+	private static final File GENERATE_ALPHA = new File("./target/data_test/generate_alpha.png");
 	private BufferedImage imageNoAlpha;
 	private BufferedImage imageAlpha;
 	private BufferedImage imageColor;
@@ -63,11 +65,50 @@ public class TrianglePictureFilterTest {
 		// filter.calculateColor(this.imageColor,
 		// new Triangle(new Point(2, 55), new Point(0, 66), new Point(22,
 		// 61))));
-		System.out.println(filter.calculateColor(this.imageColor,
+
+		assertEquals(new Color(141, 73, 73), filter.calculateColor(this.imageColor,
 				new Triangle(new Point(20, 20), new Point(30, 20), new Point(20, 30))));
-		Color c = filter.calculateColor(this.imageAlpha,
-				new Triangle(new Point(0, 0), new Point(0, 150), new Point(130, 150)));
-		System.out.println(c + " a = " + c.getAlpha());
+		assertEquals(new Color(14, 10, 7, 20), filter.calculateColor(this.imageAlpha,
+				new Triangle(new Point(0, 0), new Point(0, 150), new Point(130, 150))));
 	}
 
+	@Test
+	public void addToImageTest() {
+		TrianglePictureFilter filter = new TrianglePictureFilter(new RandomPointGenerator(0, 0));
+		IPrimitive triangle = new Triangle(new Point(0, 0), new Point(20, 0), new Point(0, 20));
+		triangle.setColor(Color.GREEN);
+		filter.addToImage(this.imageColor, triangle);
+		assertEquals(new Color(127, 127, 0), new Color(this.imageColor.getRGB(2, 2)));
+		assertEquals(new Color(127, 127, 0), new Color(this.imageColor.getRGB(6, 13)));
+	}
+
+	@Test
+	public void applyNoAlphaTest() {
+		TrianglePictureFilter filter = new TrianglePictureFilter(
+				new RandomPointGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight()));
+		try {
+			BufferedImage image = filter.apply(this.imageNoAlpha, 500, 30);
+			assertEquals(this.imageNoAlpha.getWidth(), image.getWidth());
+			assertEquals(this.imageNoAlpha.getHeight(), image.getHeight());
+			ImageIO.write(image, "png", GENERATE_NO_ALPHA);
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail("Unexpected IOException.");
+		}
+	}
+
+	@Test
+	public void applyAlphaTest() {
+		TrianglePictureFilter filter = new TrianglePictureFilter(
+				new RandomPointGenerator(this.imageAlpha.getWidth(), this.imageAlpha.getHeight()));
+		try {
+			BufferedImage image = filter.apply(this.imageAlpha, 1000, 50);
+			assertEquals(this.imageAlpha.getWidth(), image.getWidth());
+			assertEquals(this.imageAlpha.getHeight(), image.getHeight());
+			ImageIO.write(image, "png", GENERATE_ALPHA);
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail("Unexpected IOException.");
+		}
+	}
 }
