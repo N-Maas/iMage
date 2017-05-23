@@ -10,6 +10,8 @@ import java.awt.Point;
  * @version 1.0
  */
 public class RandomPointGenerator implements IPointGenerator {
+	private final int width;
+	private final int height;
 
 	/**
 	 * Constructs the generator for points within the specified coordinate
@@ -21,16 +23,12 @@ public class RandomPointGenerator implements IPointGenerator {
 	 *            the maximum y coordinate
 	 */
 	public RandomPointGenerator(int width, int height) {
-		/*
-		 * YOUR SOLUTION HERE
-		 */
+		this.width = width;
+		this.height = height;
 	}
 
 	@Override
 	public Point nextPoint() {
-		/*
-		 * YOUR SOLUTION HERE
-		 */
-		return null;
+		return new Point((int) (Math.random() * this.width), (int) (Math.random() * this.height));
 	}
 }
