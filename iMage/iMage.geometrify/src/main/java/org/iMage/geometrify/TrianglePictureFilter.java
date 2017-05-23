@@ -29,9 +29,7 @@ public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 
 	@Override
 	protected Color calculateColor(BufferedImage image, IPrimitive primitive) {
-		// System.out.println("Left: " +
-		// primitive.getBoundingBox().getUpperLeftCorner() + ", Right: "
-		// + primitive.getBoundingBox().getLowerRightCorner());
+		boolean hasAlpha = image.getColorModel().hasAlpha();
 		long red = 0;
 		long green = 0;
 		long blue = 0;
@@ -42,15 +40,17 @@ public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 		}
 
 		for (Point p : points) {
-			long argb = Integer.toUnsignedLong(image.getRGB(p.x, p.y));
-			red += argb & RED_SPACE;
-			green += argb & GREEN_SPACE;
-			blue += argb & BLUE_SPACE;
-			alpha += argb & ALPHA_SPACE;
+			Color c = new Color(image.getRGB(p.x, p.y), hasAlpha);
+			red += c.getRed();
+			green += c.getGreen();
+			blue += c.getBlue();
+			alpha += c.getAlpha();
 		}
-		return new Color((int) (red / points.size() + (green / points.size() & GREEN_SPACE)
-				+ (blue / points.size() & BLUE_SPACE) + (alpha / points.size() & ALPHA_SPACE)),
-				image.getColorModel().hasAlpha());
+		// System.out.println("r: " + red / points.size() + " g: " + green /
+		// points.size() + " b: "
+		// + blue / points.size() + " a: " + alpha / points.size());
+		return new Color((int) (red / points.size()), (int) (green / points.size()), (int) (blue / points.size()),
+				(int) (alpha / points.size()));
 	}
 
 	@Override
@@ -87,12 +87,13 @@ public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 
 	@Override
 	protected int calculateDifference(BufferedImage original, BufferedImage current, IPrimitive primitive) {
+		boolean hasAlpha = original.getColorModel().hasAlpha();
 		List<Point> points = TrianglePictureFilter.calculateInsidePoints(primitive);
 		int difference = 0;
 		for (Point p : points) {
-			int oldColor = current.getRGB(p.x, p.y);
-			int newColor = colorAverage(primitive.getColor(), oldColor);
-			int orgColor = original.getRGB(p.x, p.y);
+			Color orgColor = new Color(original.getRGB(p.x, p.y), hasAlpha);
+			Color oldColor = new Color(current.getRGB(p.x, p.y), hasAlpha);
+			Color newColor = colorAverage(primitive.getColor(), oldColor);
 			difference += colorDifference(orgColor, newColor) - colorDifference(orgColor, oldColor);
 		}
 		return difference;
@@ -100,9 +101,11 @@ public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 
 	@Override
 	protected void addToImage(BufferedImage image, IPrimitive primitive) {
+		boolean hasAlpha = image.getColorModel().hasAlpha();
 		List<Point> points = TrianglePictureFilter.calculateInsidePoints(primitive);
 		for (Point p : points) {
-			image.setRGB(p.x, p.y, colorAverage(primitive.getColor(), image.getRGB(p.x, p.y)));
+			image.setRGB(p.x, p.y,
+					colorAverage(primitive.getColor(), new Color(image.getRGB(p.x, p.y), hasAlpha)).getRGB());
 		}
 	}
 
@@ -125,20 +128,16 @@ public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 		return result;
 	}
 
-	private static int colorAverage(Color c, int rgb) {
-		int red = (c.getRed() + (rgb & RED_SPACE)) >> 1;
-		int green = ((c.getGreen() << 7) + ((rgb & GREEN_SPACE) >>> 1)) & GREEN_SPACE;
-		int blue = ((c.getBlue() << 15) + ((rgb & BLUE_SPACE) >>> 1)) & BLUE_SPACE;
-		int alpha = ((c.getAlpha() << 23) + ((rgb & ALPHA_SPACE) >>> 1)) & ALPHA_SPACE;
-		return red + green + blue + alpha;
+	private static Color colorAverage(Color a, Color b) {
+		return new Color((a.getRed() + b.getRed()) / 2, (a.getGreen() + b.getGreen()) / 2,
+				(a.getBlue() + b.getBlue()) / 2, (a.getAlpha() + b.getAlpha()) / 2);
 	}
 
-	private static int colorDifference(int a, int b) {
-		int red = Math.abs((a & RED_SPACE) - (b & RED_SPACE));
-		int green = Math.abs((a & GREEN_SPACE) - (b & GREEN_SPACE)) >> 8;
-		int blue = Math.abs((a & BLUE_SPACE) - (b & BLUE_SPACE)) >> 16;
-		int alpha = (int) (Math
-				.abs((Integer.toUnsignedLong(a) & ALPHA_SPACE) - (Integer.toUnsignedLong(b) & ALPHA_SPACE)) >> 24);
+	private static int colorDifference(Color a, Color b) {
+		int red = Math.abs(a.getRed() - b.getRed());
+		int green = Math.abs(a.getGreen() - b.getGreen());
+		int blue = Math.abs(a.getBlue() - b.getBlue());
+		int alpha = Math.abs(a.getAlpha() - b.getAlpha());
 		return red + green + blue + alpha;
 	}
 }
