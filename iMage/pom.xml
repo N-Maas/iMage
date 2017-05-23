@@ -20,4 +20,11 @@
   	<module>iMage.geometrify</module>
   	<module>iMage.geometrify-cli</module>
   </modules>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
