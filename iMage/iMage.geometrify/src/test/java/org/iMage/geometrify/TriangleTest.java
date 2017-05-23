@@ -26,6 +26,14 @@ public class TriangleTest {
 		Assert.assertFalse(tri.isInsidePrimitive(new Point(0, 0)));
 	}
 
+	@Test
+	public void boundigBoxTest() {
+		Triangle tri = new Triangle(new Point(2, 3), new Point(4, 2), new Point(3, 10));
+		BoundingBox bb = tri.getBoundingBox();
+		Assert.assertEquals(new Point(2, 2), bb.getUpperLeftCorner());
+		Assert.assertEquals(new Point(4, 10), bb.getLowerRightCorner());
+	}
+
 	@Test(expected = IllegalStateException.class)
 	public void colorExceptionTest() {
 		Triangle tri = new Triangle(new Point(0, 0), new Point(1, 0), new Point(0, 1));
