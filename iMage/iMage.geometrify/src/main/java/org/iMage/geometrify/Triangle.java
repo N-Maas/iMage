@@ -16,7 +16,8 @@ public class Triangle implements IPrimitive {
 	private Color color;
 
 	/**
-	 * Creates a new triangle from the given vertices.
+	 * Creates a new triangle from the given vertices. Negative coordinates or
+	 * equal points are accepted, as they are not problematically.
 	 *
 	 * @param a
 	 *            the first vertex
