@@ -21,11 +21,14 @@ public class TrianglePictureFilterTest {
 	private static final File TEST_NO_ALPHA = new File("./src/test/resources/no_alpha.png");
 	private static final File TEST_ALPHA = new File("./src/test/resources/alpha.png");
 	private static final File TEST_COLOR = new File("./src/test/resources/color.png");
+	private static final File LANDSCAPE = new File("./src/test/resources/landscape.png");
 	private static final File GENERATE_NO_ALPHA = new File("./target/data_test/generate_no_alpha.png");
 	private static final File GENERATE_ALPHA = new File("./target/data_test/generate_alpha.png");
+	private static final File GENERATE_LANDSCAPE = new File("./target/data_test/generate_landscape.png");
 	private BufferedImage imageNoAlpha;
 	private BufferedImage imageAlpha;
 	private BufferedImage imageColor;
+	private BufferedImage imageLandscape;
 	private BufferedImage generatedImage;
 
 	@BeforeClass
@@ -37,6 +40,7 @@ public class TrianglePictureFilterTest {
 		assertTrue(TEST_NO_ALPHA.exists());
 		assertTrue(TEST_ALPHA.exists());
 		assertTrue(TEST_COLOR.exists());
+		assertTrue(LANDSCAPE.exists());
 	}
 
 	/**
@@ -48,9 +52,10 @@ public class TrianglePictureFilterTest {
 			this.imageNoAlpha = ImageIO.read(TEST_NO_ALPHA);
 			this.imageAlpha = ImageIO.read(TEST_ALPHA);
 			this.imageColor = ImageIO.read(TEST_COLOR);
+			this.imageLandscape = ImageIO.read(LANDSCAPE);
 		} catch (IOException e) {
 			e.printStackTrace();
-			fail("IOException reading picture.");
+			fail("IOException reading pictures.");
 		}
 	}
 
@@ -106,6 +111,21 @@ public class TrianglePictureFilterTest {
 			assertEquals(this.imageAlpha.getWidth(), image.getWidth());
 			assertEquals(this.imageAlpha.getHeight(), image.getHeight());
 			ImageIO.write(image, "png", GENERATE_ALPHA);
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail("Unexpected IOException.");
+		}
+	}
+
+	@Test
+	public void landscapeTest() {
+		TrianglePictureFilter filter = new TrianglePictureFilter(
+				new RandomPointGenerator(this.imageLandscape.getWidth(), this.imageLandscape.getHeight()));
+		try {
+			BufferedImage image = filter.apply(this.imageLandscape, 2000, 40);
+			assertEquals(this.imageLandscape.getWidth(), image.getWidth());
+			assertEquals(this.imageLandscape.getHeight(), image.getHeight());
+			ImageIO.write(image, "png", GENERATE_LANDSCAPE);
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail("Unexpected IOException.");
