@@ -23,6 +23,9 @@ public class RandomPointGenerator implements IPointGenerator {
 	 *            the maximum y coordinate
 	 */
 	public RandomPointGenerator(int width, int height) {
+		if (width < 0 || height < 0) {
+			throw new IllegalArgumentException("Illegal bounds.");
+		}
 		this.width = width;
 		this.height = height;
 	}
