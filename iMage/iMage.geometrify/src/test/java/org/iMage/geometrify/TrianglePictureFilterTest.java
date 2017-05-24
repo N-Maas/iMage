@@ -1,6 +1,7 @@
 package org.iMage.geometrify;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -14,8 +15,16 @@ import javax.imageio.ImageIO;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+/**
+ * Tests the TrianglePictureFilter. The tests of the apply method generate new
+ * filtered pictures into target/data_test/. The expensive landscapeTest is
+ * ignored by default.
+ * 
+ * @author Nikolai
+ */
 public class TrianglePictureFilterTest {
 	private static final File TARGET_DIRECTORY = new File("./target/data_test/");
 	private static final File TEST_NO_ALPHA = new File("./src/test/resources/no_alpha.png");
@@ -29,8 +38,10 @@ public class TrianglePictureFilterTest {
 	private BufferedImage imageAlpha;
 	private BufferedImage imageColor;
 	private BufferedImage imageLandscape;
-	private BufferedImage generatedImage;
 
+	/**
+	 * Asserts that the target directory and the test images exist.
+	 */
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		// creates the directory, if not existing
@@ -59,6 +70,9 @@ public class TrianglePictureFilterTest {
 		}
 	}
 
+	/**
+	 * Tests calculateColor() by applying it to a square-colored test picture.
+	 */
 	@Test
 	public void calculateColorTest() {
 		TrianglePictureFilter filter = new TrianglePictureFilter(new RandomPointGenerator(0, 0));
@@ -77,6 +91,9 @@ public class TrianglePictureFilterTest {
 				new Triangle(new Point(0, 0), new Point(0, 150), new Point(130, 150))));
 	}
 
+	/**
+	 * Tests calculateColor() by adding a triangle to a uniform background.
+	 */
 	@Test
 	public void addToImageTest() {
 		TrianglePictureFilter filter = new TrianglePictureFilter(new RandomPointGenerator(0, 0));
@@ -87,14 +104,29 @@ public class TrianglePictureFilterTest {
 		assertEquals(new Color(127, 127, 0), new Color(this.imageColor.getRGB(6, 13)));
 	}
 
+	/**
+	 * Tests whether an exception is thrown for to small parameter values at
+	 * apply().
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void applyZeroTest() {
+		TrianglePictureFilter filter = new TrianglePictureFilter(new RandomPointGenerator(0, 0));
+		filter.apply(this.imageColor, 0, 0);
+	}
+
+	/**
+	 * Applies the filter to a smaller version of the walter_no_alpha test
+	 * picture, saves the result and tests the size and alpha.
+	 */
 	@Test
 	public void applyNoAlphaTest() {
 		TrianglePictureFilter filter = new TrianglePictureFilter(
 				new RandomPointGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight()));
+		BufferedImage image = filter.apply(this.imageNoAlpha, 500, 30);
+		assertEquals(this.imageNoAlpha.getWidth(), image.getWidth());
+		assertEquals(this.imageNoAlpha.getHeight(), image.getHeight());
+		assertFalse(image.getColorModel().hasAlpha());
 		try {
-			BufferedImage image = filter.apply(this.imageNoAlpha, 500, 30);
-			assertEquals(this.imageNoAlpha.getWidth(), image.getWidth());
-			assertEquals(this.imageNoAlpha.getHeight(), image.getHeight());
 			ImageIO.write(image, "png", GENERATE_NO_ALPHA);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -102,14 +134,19 @@ public class TrianglePictureFilterTest {
 		}
 	}
 
+	/**
+	 * Applies the filter to a smaller version of the dices_alpha test picture,
+	 * saves the result and tests the size and alpha.
+	 */
 	@Test
 	public void applyAlphaTest() {
 		TrianglePictureFilter filter = new TrianglePictureFilter(
 				new RandomPointGenerator(this.imageAlpha.getWidth(), this.imageAlpha.getHeight()));
+		BufferedImage image = filter.apply(this.imageAlpha, 1000, 50);
+		assertEquals(this.imageAlpha.getWidth(), image.getWidth());
+		assertEquals(this.imageAlpha.getHeight(), image.getHeight());
 		try {
-			BufferedImage image = filter.apply(this.imageAlpha, 1000, 50);
-			assertEquals(this.imageAlpha.getWidth(), image.getWidth());
-			assertEquals(this.imageAlpha.getHeight(), image.getHeight());
+			assertTrue(image.getColorModel().hasAlpha());
 			ImageIO.write(image, "png", GENERATE_ALPHA);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -117,14 +154,19 @@ public class TrianglePictureFilterTest {
 		}
 	}
 
+	/**
+	 * Applies the filter to a relatively big landscape picture, saves the
+	 * result and tests the size.
+	 */
+	@Ignore
 	@Test
 	public void landscapeTest() {
 		TrianglePictureFilter filter = new TrianglePictureFilter(
 				new RandomPointGenerator(this.imageLandscape.getWidth(), this.imageLandscape.getHeight()));
+		BufferedImage image = filter.apply(this.imageLandscape, 2000, 40);
+		assertEquals(this.imageLandscape.getWidth(), image.getWidth());
+		assertEquals(this.imageLandscape.getHeight(), image.getHeight());
 		try {
-			BufferedImage image = filter.apply(this.imageLandscape, 2000, 40);
-			assertEquals(this.imageLandscape.getWidth(), image.getWidth());
-			assertEquals(this.imageLandscape.getHeight(), image.getHeight());
 			ImageIO.write(image, "png", GENERATE_LANDSCAPE);
 		} catch (IOException e) {
 			e.printStackTrace();

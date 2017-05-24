@@ -9,13 +9,9 @@ import java.util.List;
 /**
  * Modifies an image by iteratively reconstructing it with triangles.
  *
- * @version 1.0
+ * @author Nikolai
  */
 public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
-	private static final int RED_SPACE = 255;
-	private static final int GREEN_SPACE = 255 << 8;
-	private static final int BLUE_SPACE = 255 << 16;
-	private static final int ALPHA_SPACE = 255 << 24;
 
 	/**
 	 * Constructs the filter within the specified point generator.
@@ -46,9 +42,6 @@ public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 			blue += c.getBlue();
 			alpha += c.getAlpha();
 		}
-		// System.out.println("r: " + red / points.size() + " g: " + green /
-		// points.size() + " b: "
-		// + blue / points.size() + " a: " + alpha / points.size());
 		return new Color((int) (red / points.size()), (int) (green / points.size()), (int) (blue / points.size()),
 				(int) (alpha / points.size()));
 	}
@@ -85,6 +78,19 @@ public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 		return new Triangle(a, b, c);
 	}
 
+	/*
+	 * This method performance-optimized by firstly not copying the picture and
+	 * inserting the primitive, but directly calculating the difference.
+	 * Secondly, the difference is calculated relative to the difference of the
+	 * current image (current difference = 0). This reduces the calculation
+	 * effort to the bounding box. Therefore, most results are probably
+	 * negative.
+	 * 
+	 * @see
+	 * org.iMage.geometrify.AbstractPrimitivePictureFilter#calculateDifference(
+	 * java.awt.image.BufferedImage, java.awt.image.BufferedImage,
+	 * org.iMage.geometrify.IPrimitive)
+	 */
 	@Override
 	protected int calculateDifference(BufferedImage original, BufferedImage current, IPrimitive primitive) {
 		boolean hasAlpha = original.getColorModel().hasAlpha();
@@ -109,6 +115,13 @@ public class TrianglePictureFilter extends AbstractPrimitivePictureFilter {
 		}
 	}
 
+	/**
+	 * Creates a list of all points that are inside the specified primitive.
+	 * 
+	 * @param ip
+	 *            the primitive
+	 * @return list of all points inside the primitive
+	 */
 	private static List<Point> calculateInsidePoints(IPrimitive ip) {
 		BoundingBox bb = ip.getBoundingBox();
 		int minX = bb.getUpperLeftCorner().x;
