@@ -7,11 +7,4 @@
   </parent>
   <groupId>swt1.ub2.a4</groupId>
   <artifactId>1975402</artifactId>
-  <dependencies>
-  	<dependency>
-  		<groupId>swt1</groupId>
-  		<artifactId>iMage.geometrify-base</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-  </dependencies>
 </project>

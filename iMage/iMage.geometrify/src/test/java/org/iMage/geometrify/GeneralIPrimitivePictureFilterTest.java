@@ -19,13 +19,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Tests the TrianglePictureFilter. The tests of the apply method generate new
- * filtered pictures into target/data_test/. The expensive landscapeTest is
- * ignored by default.
+ * Tests the GeneralIPrimitivePictureFilter. The tests of the apply method
+ * generate new filtered pictures into target/data_test/. The expensive
+ * landscapeTest is ignored by default.
  * 
  * @author Nikolai
  */
-public class TrianglePictureFilterTest {
+public class GeneralIPrimitivePictureFilterTest {
 	private static final File TARGET_DIRECTORY = new File("./target/data_test/");
 	private static final File TEST_NO_ALPHA = new File("./src/test/resources/no_alpha.png");
 	private static final File TEST_ALPHA = new File("./src/test/resources/alpha.png");
@@ -75,33 +75,20 @@ public class TrianglePictureFilterTest {
 	 */
 	@Test
 	public void calculateColorTest() {
-		TrianglePictureFilter filter = new TrianglePictureFilter(new RandomPointGenerator(0, 0));
+		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(new RectangleGenerator(2, 2));
 		assertEquals(Color.RED, filter.calculateColor(this.imageColor,
-				new Triangle(new Point(0, 0), new Point(20, 2), new Point(2, 20))));
+				new IPolygon(new Point(0, 0), new Point(20, 2), new Point(2, 20))));
 		assertEquals(Color.WHITE, filter.calculateColor(this.imageColor,
-				new Triangle(new Point(30, 30), new Point(45, 30), new Point(30, 45))));
+				new IPolygon(new Point(30, 30), new Point(45, 30), new Point(30, 45))));
 		// assertEquals(new Color(0, 0, 255, 127),
 		// filter.calculateColor(this.imageColor,
 		// new Triangle(new Point(2, 55), new Point(0, 66), new Point(22,
 		// 61))));
 
 		assertEquals(new Color(141, 73, 73), filter.calculateColor(this.imageColor,
-				new Triangle(new Point(20, 20), new Point(30, 20), new Point(20, 30))));
+				new IPolygon(new Point(20, 20), new Point(30, 20), new Point(20, 30))));
 		assertEquals(new Color(14, 10, 7, 20), filter.calculateColor(this.imageAlpha,
-				new Triangle(new Point(0, 0), new Point(0, 150), new Point(130, 150))));
-	}
-
-	/**
-	 * Tests calculateColor() by adding a triangle to a uniform background.
-	 */
-	@Test
-	public void addToImageTest() {
-		TrianglePictureFilter filter = new TrianglePictureFilter(new RandomPointGenerator(0, 0));
-		IPrimitive triangle = new Triangle(new Point(0, 0), new Point(20, 0), new Point(0, 20));
-		triangle.setColor(Color.GREEN);
-		filter.addToImage(this.imageColor, triangle);
-		assertEquals(new Color(127, 127, 0), new Color(this.imageColor.getRGB(2, 2)));
-		assertEquals(new Color(127, 127, 0), new Color(this.imageColor.getRGB(6, 13)));
+				new IPolygon(new Point(0, 0), new Point(0, 150), new Point(130, 150))));
 	}
 
 	/**
@@ -110,7 +97,7 @@ public class TrianglePictureFilterTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void applyZeroTest() {
-		TrianglePictureFilter filter = new TrianglePictureFilter(new RandomPointGenerator(0, 0));
+		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(new RectangleGenerator(2, 2));
 		filter.apply(this.imageColor, 0, 0);
 	}
 
@@ -120,8 +107,8 @@ public class TrianglePictureFilterTest {
 	 */
 	@Test
 	public void applyNoAlphaTest() {
-		TrianglePictureFilter filter = new TrianglePictureFilter(
-				new RandomPointGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight()));
+		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(
+				new PolygonGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight(), 7));
 		BufferedImage image = filter.apply(this.imageNoAlpha, 500, 30);
 		assertEquals(this.imageNoAlpha.getWidth(), image.getWidth());
 		assertEquals(this.imageNoAlpha.getHeight(), image.getHeight());
@@ -140,8 +127,8 @@ public class TrianglePictureFilterTest {
 	 */
 	@Test
 	public void applyAlphaTest() {
-		TrianglePictureFilter filter = new TrianglePictureFilter(
-				new RandomPointGenerator(this.imageAlpha.getWidth(), this.imageAlpha.getHeight()));
+		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(
+				new PolygonGenerator(this.imageAlpha.getWidth(), this.imageAlpha.getHeight(), 7));
 		BufferedImage image = filter.apply(this.imageAlpha, 1000, 50);
 		assertEquals(this.imageAlpha.getWidth(), image.getWidth());
 		assertEquals(this.imageAlpha.getHeight(), image.getHeight());
@@ -161,8 +148,8 @@ public class TrianglePictureFilterTest {
 	@Ignore
 	@Test
 	public void landscapeTest() {
-		TrianglePictureFilter filter = new TrianglePictureFilter(
-				new RandomPointGenerator(this.imageLandscape.getWidth(), this.imageLandscape.getHeight()));
+		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(
+				new RectangleGenerator(this.imageLandscape.getWidth(), this.imageLandscape.getHeight()));
 		BufferedImage image = filter.apply(this.imageLandscape, 2000, 40);
 		assertEquals(this.imageLandscape.getWidth(), image.getWidth());
 		assertEquals(this.imageLandscape.getHeight(), image.getHeight());
