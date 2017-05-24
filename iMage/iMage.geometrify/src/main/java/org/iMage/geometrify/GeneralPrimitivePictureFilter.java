@@ -39,9 +39,8 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		this.opaque = opaque;
 	}
 
-	private static Color calculateColor(BufferedImage image, IPrimitive primitive) {
+	private static Color calculateColor(int[] data, IPrimitive primitive, int width, boolean hasAlpha) {
 		List<Point> insidePoints = primitive.getInsidePoints();
-		boolean hasAlpha = image.getColorModel().hasAlpha();
 		long red = 0;
 		long green = 0;
 		long blue = 0;
@@ -51,7 +50,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		}
 
 		for (Point p : insidePoints) {
-			Color c = new Color(image.getRGB(p.x, p.y), hasAlpha);
+			Color c = new Color(data[calcIndex(p.x, p.y, width)], hasAlpha);
 			red += c.getRed();
 			green += c.getGreen();
 			blue += c.getBlue();
@@ -67,7 +66,11 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 			throw new IllegalArgumentException("Numbers must be greater 0.");
 		}
 
+		int width = image.getWidth();
+		boolean hasAlpha = image.getColorModel().hasAlpha();
 		BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+		int[] orgSample = new int[width * image.getHeight()];
+		image.getRaster().getPixel(width - 1, image.getHeight() - 1, orgSample);
 
 		// reuseable resources
 		ExecutorService executor = Executors.newFixedThreadPool(numberOfSamples);
@@ -78,13 +81,17 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 
 		for (int i = 0; i < numberOfIterations; i++) {
 			CountDownLatch latch = new CountDownLatch(numberOfSamples);
+			int[] newSample = new int[newImage.getWidth() * newImage.getHeight()];
+			newImage.getRaster().getPixel(newImage.getWidth() - 1, newImage.getHeight() - 1, newSample);
 			for (int j = 0; j < numberOfSamples; j++) {
 				final int puffer = j;
 				executor.submit(() -> {
 					try {
 						prims[puffer] = this.generator.generatePrimitive();
-						colors[puffer] = GeneralPrimitivePictureFilter.calculateColor(image, prims[puffer]);
-						diffs[puffer] = this.calculateDifference(image, newImage, colors[puffer], prims[puffer]);
+						colors[puffer] = GeneralPrimitivePictureFilter.calculateColor(orgSample, prims[puffer], width,
+								hasAlpha);
+						diffs[puffer] = this.calculateDifference(orgSample, newSample, colors[puffer], prims[puffer],
+								width, hasAlpha);
 						latch.countDown();
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -125,13 +132,29 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	 * java.awt.image.BufferedImage, java.awt.image.BufferedImage,
 	 * org.iMage.geometrify.IPrimitive)
 	 */
-	private int calculateDifference(BufferedImage original, BufferedImage current, Color color, IPrimitive primitive) {
+
+	// private int calculateDifference(BufferedImage original, BufferedImage
+	// current, Color color, IPrimitive primitive) {
+	// List<Point> insidePoints = primitive.getInsidePoints();
+	// boolean hasAlpha = original.getColorModel().hasAlpha();
+	// int difference = 0;
+	// for (Point p : insidePoints) {
+	// Color orgColor = new Color(original.getRGB(p.x, p.y), hasAlpha);
+	// Color oldColor = new Color(current.getRGB(p.x, p.y), hasAlpha);
+	// Color newColor = colorAverage(color, oldColor, this.opaque);
+	// difference += colorDifference(orgColor, newColor) -
+	// colorDifference(orgColor, oldColor);
+	// }
+	// return difference;
+	// }
+
+	private int calculateDifference(int[] orgData, int[] newData, Color color, IPrimitive primitive, int width,
+			boolean hasAlpha) {
 		List<Point> insidePoints = primitive.getInsidePoints();
-		boolean hasAlpha = original.getColorModel().hasAlpha();
 		int difference = 0;
 		for (Point p : insidePoints) {
-			Color orgColor = new Color(original.getRGB(p.x, p.y), hasAlpha);
-			Color oldColor = new Color(current.getRGB(p.x, p.y), hasAlpha);
+			Color orgColor = new Color(orgData[GeneralPrimitivePictureFilter.calcIndex(p.x, p.y, width)], hasAlpha);
+			Color oldColor = new Color(newData[GeneralPrimitivePictureFilter.calcIndex(p.x, p.y, width)], hasAlpha);
 			Color newColor = colorAverage(color, oldColor, this.opaque);
 			difference += colorDifference(orgColor, newColor) - colorDifference(orgColor, oldColor);
 		}
@@ -149,10 +172,11 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 
 	private static Color colorAverage(Color orgC, Color newC, float opaque) {
 		float inverse = 1 - opaque;
-		return new Color((int) (orgC.getRed() * inverse + newC.getRed() * opaque),
-				(int) (orgC.getGreen() * inverse + newC.getGreen() * opaque),
-				(int) (orgC.getBlue() * inverse + newC.getBlue() * opaque),
-				(int) (orgC.getAlpha() * inverse + newC.getAlpha() * opaque));
+		int red = (int) (orgC.getRed() * inverse + newC.getRed() * opaque);
+		int green = (int) (orgC.getGreen() * inverse + newC.getGreen() * opaque);
+		int blue = (int) (orgC.getBlue() * inverse + newC.getBlue() * opaque);
+		int alpha = (int) (orgC.getAlpha() * inverse + newC.getAlpha() * opaque);
+		return new Color(red, green, blue, alpha);
 	}
 
 	private static int colorDifference(Color a, Color b) {
@@ -161,5 +185,9 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		int blue = Math.abs(a.getBlue() - b.getBlue());
 		int alpha = Math.abs(a.getAlpha() - b.getAlpha());
 		return red + green + blue + alpha;
+	}
+
+	private static int calcIndex(int x, int y, int width) {
+		return y * width + x;
 	}
 }
