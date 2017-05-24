@@ -26,14 +26,16 @@ import org.junit.Test;
  * @author Nikolai
  */
 public class GeneralIPrimitivePictureFilterTest {
+	private static final String addition = "_test";
 	private static final File TARGET_DIRECTORY = new File("./target/data_test/");
 	private static final File TEST_NO_ALPHA = new File("./src/test/resources/no_alpha.png");
 	private static final File TEST_ALPHA = new File("./src/test/resources/alpha.png");
 	private static final File TEST_COLOR = new File("./src/test/resources/color.png");
 	private static final File LANDSCAPE = new File("./src/test/resources/landscape.png");
-	private static final File GENERATE_NO_ALPHA = new File("./target/data_test/generate_no_alpha.png");
-	private static final File GENERATE_ALPHA = new File("./target/data_test/generate_alpha.png");
-	private static final File GENERATE_LANDSCAPE = new File("./target/data_test/generate_landscape.png");
+	private static final File GENERATE_NO_ALPHA = new File("./target/data_test/generate_no_alpha" + addition + ".png");
+	private static final File GENERATE_ALPHA = new File("./target/data_test/generate_alpha" + addition + ".png");
+	private static final File GENERATE_LANDSCAPE = new File(
+			"./target/data_test/generate_landscape" + addition + ".png");
 	private BufferedImage imageNoAlpha;
 	private BufferedImage imageAlpha;
 	private BufferedImage imageColor;
@@ -75,21 +77,57 @@ public class GeneralIPrimitivePictureFilterTest {
 	 */
 	@Test
 	public void calculateColorTest() {
-		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(new RectangleGenerator(2, 2));
-		assertEquals(Color.RED, filter.calculateColor(this.imageColor,
-				new IPolygon(new Point(0, 0), new Point(20, 2), new Point(2, 20))));
-		assertEquals(Color.WHITE, filter.calculateColor(this.imageColor,
-				new IPolygon(new Point(30, 30), new Point(45, 30), new Point(30, 45))));
-		// assertEquals(new Color(0, 0, 255, 127),
-		// filter.calculateColor(this.imageColor,
-		// new Triangle(new Point(2, 55), new Point(0, 66), new Point(22,
-		// 61))));
+		int[][] data = new int[this.imageColor.getWidth()][this.imageColor.getHeight()];
+		for (int i = 0; i < this.imageColor.getWidth(); i++) {
+			for (int j = 0; j < this.imageColor.getHeight(); j++) {
+				data[i][j] = this.imageColor.getRGB(i, j);
+			}
+		}
 
-		assertEquals(new Color(141, 73, 73), filter.calculateColor(this.imageColor,
-				new IPolygon(new Point(20, 20), new Point(30, 20), new Point(20, 30))));
-		assertEquals(new Color(14, 10, 7, 20), filter.calculateColor(this.imageAlpha,
-				new IPolygon(new Point(0, 0), new Point(0, 150), new Point(130, 150))));
+		assertEquals(Color.RED, new Color(GeneralPrimitivePictureFilter.calculateColor(data,
+				new IPolygon(new Point(0, 0), new Point(20, 2), new Point(2, 20)))));
+		assertEquals(Color.WHITE, new Color(GeneralPrimitivePictureFilter.calculateColor(data,
+				new IPolygon(new Point(30, 30), new Point(45, 30), new Point(30, 45)))));
 	}
+
+	// @Test
+	// public void colorAverageTest() {
+	// for (int i = 0; i < 100; i++) {
+	// Color c1 = new Color((int) (Math.random() * 256), (int) (Math.random() *
+	// 256), (int) (Math.random() * 256),
+	// (int) (Math.random() * 256));
+	// Color c2 = new Color((int) (Math.random() * 256), (int) (Math.random() *
+	// 256), (int) (Math.random() * 256),
+	// (int) (Math.random() * 256));
+	// assertEquals(
+	// "R1: " + c1.getRed() + " R2: " + c2.getRed() + " - G1: " + c1.getGreen()
+	// + " G2: " + c2.getGreen()
+	// + " - B1: " + c1.getBlue() + " B2: " + c2.getBlue(),
+	// new Color((c1.getRed() + c2.getRed()) / 2, (c1.getGreen() +
+	// c2.getGreen()) / 2,
+	// (c1.getBlue() + c2.getBlue()) / 2, (c1.getAlpha() + c2.getAlpha()) / 2),
+	// new Color(GeneralPrimitivePictureFilter.colorAverage(c1.getRGB(),
+	// c2.getRGB(), 0.5f), true));
+	// }
+	// }
+
+	// @Test
+	// public void colorDifferenceTest() {
+	// for (int i = 0; i < 100; i++) {
+	// Color c1 = new Color((int) (Math.random() * 256), (int) (Math.random() *
+	// 256), (int) (Math.random() * 256),
+	// (int) (Math.random() * 256));
+	// Color c2 = new Color((int) (Math.random() * 256), (int) (Math.random() *
+	// 256), (int) (Math.random() * 256),
+	// (int) (Math.random() * 256));
+	// assertEquals(
+	// "R1: " + c1.getRed() + " R2: " + c2.getRed() + " - G1: " + c1.getGreen()
+	// + " G2: " + c2.getGreen()
+	// + " - B1: " + c1.getBlue() + " B2: " + c2.getBlue(),
+	// GeneralPrimitivePictureFilter.colorDifference(c1, c2),
+	// GeneralPrimitivePictureFilter.colorDifference(c1.getRGB(), c2.getRGB()));
+	// }
+	// }
 
 	/**
 	 * Tests whether an exception is thrown for to small parameter values at
@@ -108,8 +146,8 @@ public class GeneralIPrimitivePictureFilterTest {
 	@Test
 	public void applyNoAlphaTest() {
 		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(
-				new PolygonGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight(), 7));
-		BufferedImage image = filter.apply(this.imageNoAlpha, 500, 30);
+				new PolygonGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight(), 5, 9));
+		BufferedImage image = filter.apply(this.imageNoAlpha, 500, 25);
 		assertEquals(this.imageNoAlpha.getWidth(), image.getWidth());
 		assertEquals(this.imageNoAlpha.getHeight(), image.getHeight());
 		assertFalse(image.getColorModel().hasAlpha());
@@ -128,8 +166,8 @@ public class GeneralIPrimitivePictureFilterTest {
 	@Test
 	public void applyAlphaTest() {
 		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(
-				new PolygonGenerator(this.imageAlpha.getWidth(), this.imageAlpha.getHeight(), 7));
-		BufferedImage image = filter.apply(this.imageAlpha, 1000, 50);
+				new PolygonGenerator(this.imageAlpha.getWidth(), this.imageAlpha.getHeight(), 5, 9));
+		BufferedImage image = filter.apply(this.imageAlpha, 500, 50);
 		assertEquals(this.imageAlpha.getWidth(), image.getWidth());
 		assertEquals(this.imageAlpha.getHeight(), image.getHeight());
 		try {
@@ -149,8 +187,8 @@ public class GeneralIPrimitivePictureFilterTest {
 	@Test
 	public void landscapeTest() {
 		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(
-				new RectangleGenerator(this.imageLandscape.getWidth(), this.imageLandscape.getHeight()));
-		BufferedImage image = filter.apply(this.imageLandscape, 2000, 40);
+				new PolygonGenerator(this.imageLandscape.getWidth(), this.imageLandscape.getHeight(), 4, 8));
+		BufferedImage image = filter.apply(this.imageLandscape, 1600, 100);
 		assertEquals(this.imageLandscape.getWidth(), image.getWidth());
 		assertEquals(this.imageLandscape.getHeight(), image.getHeight());
 		try {
