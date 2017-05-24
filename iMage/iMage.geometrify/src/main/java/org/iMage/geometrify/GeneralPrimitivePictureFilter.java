@@ -3,8 +3,11 @@ package org.iMage.geometrify;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Modifies an image by iteratively reconstructing it with triangles.
@@ -36,7 +39,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		this.opaque = opaque;
 	}
 
-	protected Color calculateColor(BufferedImage image, IPrimitive primitive) {
+	private static Color calculateColor(BufferedImage image, IPrimitive primitive) {
 		List<Point> insidePoints = primitive.getInsidePoints();
 		boolean hasAlpha = image.getColorModel().hasAlpha();
 		long red = 0;
@@ -65,21 +68,46 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		}
 
 		BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+
+		// reuseable resources
+		ExecutorService executor = Executors.newFixedThreadPool(numberOfSamples);
+		IPrimitive[] prims = new IPrimitive[numberOfSamples];
+		Color[] colors = new Color[numberOfSamples];
+		int[] diffs = new int[numberOfSamples];
+		ReentrantLock lock = new ReentrantLock();
+
 		for (int i = 0; i < numberOfIterations; i++) {
-			int minDiff = Integer.MAX_VALUE;
-			IPrimitive minPrimitive = () -> Collections.emptyList();
-			Color minColor = Color.BLACK;
+			CountDownLatch latch = new CountDownLatch(numberOfSamples);
 			for (int j = 0; j < numberOfSamples; j++) {
-				IPrimitive testPrim = this.generator.generatePrimitive();
-				Color testColor = this.calculateColor(image, testPrim);
-				int diff = this.calculateDifference(image, newImage, testColor, testPrim);
-				if (diff < minDiff) {
-					minDiff = diff;
-					minPrimitive = testPrim;
-					minColor = testColor;
+				final int puffer = j;
+				executor.submit(() -> {
+					try {
+						prims[puffer] = this.generator.generatePrimitive();
+						colors[puffer] = GeneralPrimitivePictureFilter.calculateColor(image, prims[puffer]);
+						diffs[puffer] = this.calculateDifference(image, newImage, colors[puffer], prims[puffer]);
+						latch.countDown();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+			}
+			try {
+				latch.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Synchronisation failure in calculation.");
+			}
+
+			int min = Integer.MAX_VALUE;
+			int minIndex = 0;
+			for (int k = 0; k < numberOfSamples; k++) {
+				if (diffs[k] <= min) {
+					min = diffs[k];
+					minIndex = k;
 				}
 			}
-			this.addToImage(newImage, minColor, minPrimitive);
+
+			this.addToImage(newImage, colors[minIndex], prims[minIndex]);
 		}
 		return newImage;
 	}
@@ -97,8 +125,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	 * java.awt.image.BufferedImage, java.awt.image.BufferedImage,
 	 * org.iMage.geometrify.IPrimitive)
 	 */
-	protected int calculateDifference(BufferedImage original, BufferedImage current, Color color,
-			IPrimitive primitive) {
+	private int calculateDifference(BufferedImage original, BufferedImage current, Color color, IPrimitive primitive) {
 		List<Point> insidePoints = primitive.getInsidePoints();
 		boolean hasAlpha = original.getColorModel().hasAlpha();
 		int difference = 0;
