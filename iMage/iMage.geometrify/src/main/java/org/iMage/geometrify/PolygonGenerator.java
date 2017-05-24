@@ -50,11 +50,11 @@ public class PolygonGenerator implements IPrimitiveGenerator {
 		int avgX = (maxX + minX) / 2;
 		int avgY = (maxY + minY) / 2;
 
-		SortedMap<Double, Point> order = new TreeMap<>();
-		for (Point p : points) {
+		SortedMap<Double, List<Point>> order = new TreeMap<>();
+		for (Point point : points) {
 			double value = 0;
-			int delX = p.x - avgX;
-			int delY = p.y - avgY;
+			int delX = point.x - avgX;
+			int delY = point.y - avgY;
 			if (!(delX == 0 && delY == 0)) {
 				if (delX >= 0) {
 					value = Math.acos((-delY) / Math.sqrt(delX * delX + delY * delY));
@@ -62,8 +62,16 @@ public class PolygonGenerator implements IPrimitiveGenerator {
 					value = Math.PI + Math.acos((delY) / Math.sqrt(delX * delX + delY * delY));
 				}
 			}
-			order.put(value, p);
+			List<Point> addPoints = new ArrayList<>();
+			addPoints.add(point);
+			order.merge(value, addPoints, (s1, s2) -> {
+				s1.addAll(s2);
+				return s1;
+			});
 		}
-		return new IPolygon(order.values().toArray(new Point[0]));
+		return new IPolygon(order.values().stream().reduce((s1, s2) -> {
+			s1.addAll(s2);
+			return s1;
+		}).get().toArray(new Point[0]));
 	}
 }
