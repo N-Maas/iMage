@@ -55,8 +55,8 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 			red += val & RED;
 			alpha += val & ALPHA;
 		}
-		int result = (int) (blue / insidePoints.size()) + ((int) (green / insidePoints.size()) & GREEN)
-				+ ((int) (red / insidePoints.size()) & RED) + (((int) (alpha / insidePoints.size())) & ALPHA);
+		int result = (int) (blue / insidePoints.size()) | ((int) (green / insidePoints.size()) & GREEN)
+				| ((int) (red / insidePoints.size()) & RED) | (((int) (alpha / insidePoints.size())) & ALPHA);
 		// System.out.println(" r:" + (red / insidePoints.size()) + " g:" +
 		// (green / insidePoints.size()) + "b :"
 		// + (blue / insidePoints.size()));
@@ -190,7 +190,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		int red = (int) ((orgC & RED) * inverse + (newC & RED) * opaque) & RED;
 		int alpha = (int) (Integer.toUnsignedLong((orgC & ALPHA)) * inverse)
 				+ (int) (Integer.toUnsignedLong((newC & ALPHA)) * opaque) & ALPHA;
-		return blue + green + red + alpha;
+		return blue | green | red | alpha;
 
 	}
 
