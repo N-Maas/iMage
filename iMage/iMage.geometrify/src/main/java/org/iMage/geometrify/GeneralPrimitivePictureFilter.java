@@ -161,7 +161,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		for (Point p : insidePoints) {
 			int orgColor = orgData[p.x][p.y];
 			int oldColor = newData[p.x][p.y];
-			int newColor = colorAverage(color, oldColor, this.opaque);
+			int newColor = colorAverage(oldColor, color, this.opaque);
 			difference += colorDifference(orgColor, newColor) - colorDifference(orgColor, oldColor);
 		}
 		return difference;
@@ -170,7 +170,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	private void addToImage(int[][] data, int color, IPrimitive primitive) {
 		List<Point> insidePoints = primitive.getInsidePoints();
 		for (Point p : insidePoints) {
-			data[p.x][p.y] = colorAverage(color, data[p.x][p.y], this.opaque);
+			data[p.x][p.y] = colorAverage(data[p.x][p.y], color, this.opaque);
 		}
 	}
 
