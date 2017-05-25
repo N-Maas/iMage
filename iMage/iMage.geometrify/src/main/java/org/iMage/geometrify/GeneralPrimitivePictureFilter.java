@@ -1,8 +1,6 @@
 package org.iMage.geometrify;
 
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,6 +12,7 @@ import java.util.concurrent.Executors;
  */
 public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	private static final int BLUE = 255, GREEN = 255 << 8, RED = 255 << 16, ALPHA = 255 << 24;
+	private static final int X_VAL = BLUE | GREEN, Y_VAL = RED | ALPHA;
 	private final IPrimitiveGenerator generator;
 	private final float opaque;
 
@@ -39,27 +38,27 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	}
 
 	public static int calculateColor(int[][] data, IPrimitive primitive) {
-		List<Point> insidePoints = primitive.getInsidePoints();
+		int[] insidePoints = primitive.getInsidePoints();
 		long blue = 0;
 		long green = 0;
 		long red = 0;
 		long alpha = 0;
-		if (insidePoints.size() == 0) {
+		if (insidePoints.length == 0) {
 			return 0;
 		}
 
-		for (Point p : insidePoints) {
-			long val = data[p.x][p.y];
+		for (int p : insidePoints) {
+			long val = data[p & X_VAL][(p & Y_VAL) >>> 16];
 			blue += val & BLUE;
 			green += val & GREEN;
 			red += val & RED;
 			alpha += val & ALPHA;
 		}
-		int result = (int) (blue / insidePoints.size()) | ((int) (green / insidePoints.size()) & GREEN)
-				| ((int) (red / insidePoints.size()) & RED) | (((int) (alpha / insidePoints.size())) & ALPHA);
-		// System.out.println(" r:" + (red / insidePoints.size()) + " g:" +
-		// (green / insidePoints.size()) + "b :"
-		// + (blue / insidePoints.size()));
+		int result = (int) (blue / insidePoints.length) | ((int) (green / insidePoints.length) & GREEN)
+				| ((int) (red / insidePoints.length) & RED) | (((int) (alpha / insidePoints.length)) & ALPHA);
+		// System.out.println(" r:" + (red / insidePoints.length) + " g:" +
+		// (green / insidePoints.length) + "b :"
+		// + (blue / insidePoints.length));
 		// System.out.println("RET " + new Color(result));
 		return result;
 
@@ -156,11 +155,12 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	// }
 
 	private int calculateDifference(int[][] orgData, int[][] newData, int color, IPrimitive primitive) {
-		List<Point> insidePoints = primitive.getInsidePoints();
+		int[] insidePoints = primitive.getInsidePoints();
 		int difference = 0;
-		for (Point p : insidePoints) {
-			int orgColor = orgData[p.x][p.y];
-			int oldColor = newData[p.x][p.y];
+		for (int p : insidePoints) {
+			int x = p & X_VAL, y = (p & Y_VAL) >>> 16;
+			int orgColor = orgData[x][y];
+			int oldColor = newData[x][y];
 			int newColor = colorAverage(oldColor, color, this.opaque);
 			difference += colorDifference(orgColor, newColor) - colorDifference(orgColor, oldColor);
 		}
@@ -168,9 +168,10 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	}
 
 	private void addToImage(int[][] data, int color, IPrimitive primitive) {
-		List<Point> insidePoints = primitive.getInsidePoints();
-		for (Point p : insidePoints) {
-			data[p.x][p.y] = colorAverage(data[p.x][p.y], color, this.opaque);
+		int[] insidePoints = primitive.getInsidePoints();
+		for (int p : insidePoints) {
+			int x = p & X_VAL, y = (p & Y_VAL) >>> 16;
+			data[x][y] = colorAverage(data[x][y], color, this.opaque);
 		}
 	}
 

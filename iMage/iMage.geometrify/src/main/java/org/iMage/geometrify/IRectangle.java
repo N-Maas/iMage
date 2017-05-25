@@ -1,8 +1,6 @@
 package org.iMage.geometrify;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A polygon.
@@ -12,7 +10,8 @@ import java.util.List;
  */
 public class IRectangle implements IPrimitive {
 	private final int xMin, xMax, yMin, yMax;
-	private List<Point> insidePoints;
+	private int[] insidePoints;
+	boolean print = false;
 
 	/**
 	 * Creates a new triangle from the given vertices. Negative coordinates or
@@ -40,7 +39,7 @@ public class IRectangle implements IPrimitive {
 	 * @return list of all points inside the primitive
 	 */
 	@Override
-	public List<Point> getInsidePoints() {
+	public int[] getInsidePoints() {
 		if (this.insidePoints == null) {
 			this.calculatePoints();
 		}
@@ -48,13 +47,13 @@ public class IRectangle implements IPrimitive {
 	}
 
 	private void calculatePoints() {
-		ArrayList<Point> result = new ArrayList<>((this.xMax - this.xMin + 1) * (this.yMax - this.yMin + 1) + 1);
+		int width = this.xMax - this.xMin + 1;
+		int[] result = new int[width * (this.yMax - this.yMin + 1)];
 		for (int i = this.xMin; i <= this.xMax; i++) {
 			for (int j = this.yMin; j <= this.yMax; j++) {
-				result.add(new Point(i, j));
+				result[(i - this.xMin) + (j - this.yMin) * width] = i | (j << 16);
 			}
 		}
-		result.trimToSize();
 		this.insidePoints = result;
 	}
 }
