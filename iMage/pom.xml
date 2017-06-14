@@ -7,7 +7,6 @@
   </parent>
   <groupId>swt1</groupId>
   <artifactId>iMage</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <repositories>
  	<repository>
@@ -17,5 +16,6 @@
   </repositories>
   <modules>
   	<module>jmjrst.main</module>
+  	<module>iMage.geometrify</module>
   </modules>
 </project>
