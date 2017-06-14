@@ -16,7 +16,7 @@
 				<addClasspath>true</addClasspath>
 					<archive>
 						<manifest>
-							<mainClass>org.jis.Main</mainClass>
+							<mainClass>gui.GUIApp</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -28,6 +28,11 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>swt1</groupId>
+			<artifactId>iMage.geometrify</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
