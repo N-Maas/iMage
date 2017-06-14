@@ -17,5 +17,6 @@
   <modules>
   	<module>jmjrst.main</module>
   	<module>iMage.geometrify</module>
+  	<module>iMage.iLlustrate</module>
   </modules>
 </project>
