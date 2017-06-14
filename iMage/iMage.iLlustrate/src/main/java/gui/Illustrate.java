@@ -13,16 +13,22 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.iMage.geometrify.RandomPointGenerator;
+
+import filter.ObservableTPFilter;
 
 public class Illustrate {
 	private static final File DEFAULT_IMG_PATH = new File("src/main/resources/Default.png");
 	private static final int ITERATIONS_MAX = 2000;
-	private static final int ITERATIONS_DEFAULT = 20;
+	private static final int ITERATIONS_DEFAULT = 100;
 	private static final int SAMPLES_MAX = 200;
-	private static final int SAMPLES_DEFAULT = 10;
+	private static final int SAMPLES_DEFAULT = 30;
 	private static final int PREVIEW_WIDTH = 150;
 	private static final int PREVIEW_HEIGHT = 150;
 
@@ -32,19 +38,23 @@ public class Illustrate {
 	private final JLabel preview;
 	private final LabeledSlider iterations;
 	private final LabeledSlider samples;
+	private final JFileChooser chooser;
 
 	public Illustrate() {
 		this.frame = new JFrame("iLlustrate");
 		this.frame.setMinimumSize(new Dimension(400, 400));
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// TODO this.frame.setResizable(false);
+		// TODO
+		this.frame.setResizable(false);
 
 		this.original = new JLabel();
 		this.original.setPreferredSize(new Dimension(150, 150));
 		this.preview = new JLabel();
 		this.preview.setPreferredSize(new Dimension(150, 150));
 		this.iterations = new LabeledSlider("Iterations", ITERATIONS_MAX, ITERATIONS_DEFAULT);
-		this.samples = new LabeledSlider("Samples", SAMPLES_MAX, SAMPLES_DEFAULT);
+		this.samples = new LabeledSlider("Samples   ", SAMPLES_MAX, SAMPLES_DEFAULT);
+		this.chooser = new JFileChooser();
+		this.chooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
@@ -64,14 +74,24 @@ public class Illustrate {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.CENTER;
 
-		// TODO CHANGE LISTENER
-
 		panel.add(this.iterations.getComponent(), c);
 		c.gridy = 2;
 		panel.add(this.samples.getComponent(), c);
 		JButton load = new JButton("Load");
 		load.setPreferredSize(new Dimension(100, 40));
 		load.setFocusable(false);
+		load.addActionListener(e -> {
+			int val = this.chooser.showOpenDialog(this.frame);
+			if (val == JFileChooser.APPROVE_OPTION) {
+				File f = this.chooser.getSelectedFile();
+				try {
+					this.setCurrentImage(ImageIO.read(f));
+				} catch (IOException exc) {
+					// TODO Fehlermeldung
+					exc.printStackTrace();
+				}
+			}
+		});
 		JButton run = new JButton("Run");
 		run.setPreferredSize(new Dimension(100, 40));
 		run.setFocusable(false);
@@ -106,7 +126,10 @@ public class Illustrate {
 		BufferedImage preImg = scaleToBorders(img, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 		this.original.setIcon(new ImageIcon(preImg));
 
-		// TODO Call Filter
+		// TODO Call Filter/Multithreading
+		this.preview.setIcon(
+				new ImageIcon(new ObservableTPFilter(new RandomPointGenerator(preImg.getWidth(), preImg.getHeight()))
+						.apply(preImg, ITERATIONS_DEFAULT, SAMPLES_DEFAULT)));
 	}
 
 	public static BufferedImage scaleToBorders(BufferedImage src, int maxWidth, int maxHeight) {

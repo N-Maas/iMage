@@ -63,4 +63,6 @@ public class LabeledSlider {
 	public void addChangeListener(ChangeListener cl) {
 		this.cls.add(cl);
 	}
+
+	// TODO setValue
 }
