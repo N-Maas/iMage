@@ -5,10 +5,14 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -17,6 +21,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.iMage.geometrify.RandomPointGenerator;
@@ -32,51 +37,39 @@ public class Illustrate {
 	private static final int PREVIEW_WIDTH = 150;
 	private static final int PREVIEW_HEIGHT = 150;
 
-	private BufferedImage currentImage;
+	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private final JFrame frame;
 	private final JLabel original;
 	private final JLabel preview;
 	private final LabeledSlider iterations;
 	private final LabeledSlider samples;
 	private final JFileChooser chooser;
+	private BufferedImage currentImage;
 
 	public Illustrate() {
 		this.frame = new JFrame("iLlustrate");
 		this.frame.setMinimumSize(new Dimension(400, 400));
-		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// TODO
 		this.frame.setResizable(false);
+		this.frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Illustrate.this.executor.shutdown();
+			}
+		});
+		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.original = new JLabel();
 		this.original.setPreferredSize(new Dimension(150, 150));
 		this.preview = new JLabel();
 		this.preview.setPreferredSize(new Dimension(150, 150));
-		this.iterations = new LabeledSlider("Iterations", ITERATIONS_MAX, ITERATIONS_DEFAULT);
-		this.samples = new LabeledSlider("Samples   ", SAMPLES_MAX, SAMPLES_DEFAULT);
+		this.iterations = new LabeledSlider("Iterations", ITERATIONS_MAX, ITERATIONS_DEFAULT, 200);
+		this.samples = new LabeledSlider("Samples", SAMPLES_MAX, SAMPLES_DEFAULT, 200);
 		this.chooser = new JFileChooser();
 		this.chooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
+		this.chooser.setAcceptAllFileFilterUsed(false);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.insets = new Insets(5, 10, 5, 10);
-		c.fill = GridBagConstraints.NONE;
-		c.anchor = GridBagConstraints.CENTER;
-		c.weightx = 1;
-		c.weighty = 2;
-		panel.add(this.original, c);
-		c.gridx = 1;
-		panel.add(this.preview, c);
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 2;
-		c.weighty = 1;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.CENTER;
-
-		panel.add(this.iterations.getComponent(), c);
-		c.gridy = 2;
-		panel.add(this.samples.getComponent(), c);
 		JButton load = new JButton("Load");
 		load.setPreferredSize(new Dimension(100, 40));
 		load.setFocusable(false);
@@ -96,6 +89,25 @@ public class Illustrate {
 		run.setPreferredSize(new Dimension(100, 40));
 		run.setFocusable(false);
 
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(5, 10, 5, 10);
+		c.fill = GridBagConstraints.NONE;
+		c.anchor = GridBagConstraints.CENTER;
+		c.weightx = 1;
+		c.weighty = 2;
+		panel.add(this.original, c);
+		c.gridx = 1;
+		panel.add(this.preview, c);
+		c.gridx = 0;
+		c.gridy = 1;
+		c.gridwidth = 2;
+		c.weighty = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.CENTER;
+		panel.add(this.iterations.getComponent(), c);
+		c.gridy = 2;
+		panel.add(this.samples.getComponent(), c);
+
 		// TODO ACTION LISTENER
 
 		c.gridy = 3;
@@ -111,9 +123,8 @@ public class Illustrate {
 			this.setCurrentImage(ImageIO.read(DEFAULT_IMG_PATH));
 		} catch (IOException e) {
 			this.currentImage = new BufferedImage(150, 150, BufferedImage.TYPE_INT_ARGB);
-			this.original.setText("<html>Failure loading<p>default image.</html>");
+			this.original.setText("<html>   Failure loading<p>   default image.</html>");
 		}
-
 		this.frame.add(panel);
 	}
 
@@ -126,10 +137,17 @@ public class Illustrate {
 		BufferedImage preImg = scaleToBorders(img, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 		this.original.setIcon(new ImageIcon(preImg));
 
-		// TODO Call Filter/Multithreading
-		this.preview.setIcon(
-				new ImageIcon(new ObservableTPFilter(new RandomPointGenerator(preImg.getWidth(), preImg.getHeight()))
-						.apply(preImg, ITERATIONS_DEFAULT, SAMPLES_DEFAULT)));
+		this.preview.setIcon(null);
+		this.preview.setText("   Loading...   ");
+		ObservableTPFilter filter = new ObservableTPFilter(
+				new RandomPointGenerator(preImg.getWidth(), preImg.getHeight()));
+		this.executor.submit(() -> {
+			BufferedImage preview = filter.apply(preImg, ITERATIONS_DEFAULT, SAMPLES_DEFAULT);
+			SwingUtilities.invokeLater(() -> {
+				this.preview.setText(null);
+				this.preview.setIcon(new ImageIcon(preview));
+			});
+		});
 	}
 
 	public static BufferedImage scaleToBorders(BufferedImage src, int maxWidth, int maxHeight) {
