@@ -19,6 +19,10 @@ public class LabeledSlider {
 	private final JSlider slider;
 	private final JLabel label;
 
+	public LabeledSlider(String labelText, int max, int value) {
+		this(labelText, 0, max, value, true);
+	}
+
 	public LabeledSlider(String labelText, int min, int max, int value, boolean labelLeft) {
 		this.panel = new JPanel();
 		BoxLayout layout = new BoxLayout(this.panel, SwingConstants.HORIZONTAL);
@@ -29,6 +33,7 @@ public class LabeledSlider {
 		this.label.setAlignmentY(1);
 
 		this.slider = new JSlider(min, max, value);
+		this.slider.setAlignmentY(0.5f);
 		this.slider.setPaintTicks(true);
 		this.slider.setMajorTickSpacing(max - min);
 		this.slider.setPaintLabels(true);
