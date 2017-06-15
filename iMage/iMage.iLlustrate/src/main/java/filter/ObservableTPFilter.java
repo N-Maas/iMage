@@ -1,6 +1,5 @@
 package filter;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +9,20 @@ import org.iMage.geometrify.IPointGenerator;
 import org.iMage.geometrify.IPrimitive;
 import org.iMage.geometrify.TrianglePictureFilter;
 
+/**
+ * Subclass of TrianglePictureFilter that adds observable functionality.
+ * 
+ * @author Nikolai
+ */
 public class ObservableTPFilter extends TrianglePictureFilter implements FilterObservable {
 	private final List<FilterObserver> obs = new ArrayList<>();
 
+	/**
+	 * Creates an ObservableTPFilter.
+	 * 
+	 * @param pointGenerator
+	 *            the RandomPointGenerator
+	 */
 	public ObservableTPFilter(IPointGenerator pointGenerator) {
 		super(pointGenerator);
 	}
@@ -57,7 +67,15 @@ public class ObservableTPFilter extends TrianglePictureFilter implements FilterO
 		return result;
 	}
 
-	protected void notifyObservers(Image img, IPrimitive ip) {
+	/**
+	 * Updates all registered observers.
+	 * 
+	 * @param img
+	 *            current image
+	 * @param ip
+	 *            last added primitive
+	 */
+	protected void notifyObservers(BufferedImage img, IPrimitive ip) {
 		for (FilterObserver fObs : this.obs) {
 			fObs.update(img, ip);
 		}

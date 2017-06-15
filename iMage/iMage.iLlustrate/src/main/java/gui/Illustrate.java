@@ -28,6 +28,12 @@ import org.iMage.geometrify.RandomPointGenerator;
 
 import filter.ObservableTPFilter;
 
+/**
+ * Central class of iLlustrate that holds the gui elements of the main frame and
+ * delegates the events.
+ * 
+ * @author Nikolai
+ */
 public class Illustrate {
 	private static final File DEFAULT_IMG_PATH = new File("src/main/resources/Default.png");
 	private static final int ITERATIONS_MAX = 2000;
@@ -46,17 +52,11 @@ public class Illustrate {
 	private final JFileChooser chooser;
 	private BufferedImage currentImage;
 
+	/**
+	 * Constructor that creates the gui and all needed listeners.
+	 */
 	public Illustrate() {
 		this.frame = new JFrame("iLlustrate");
-		this.frame.setMinimumSize(new Dimension(400, 400));
-		this.frame.setResizable(false);
-		this.frame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				Illustrate.this.executor.shutdown();
-			}
-		});
-		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.original = new JLabel();
 		this.original.setPreferredSize(new Dimension(150, 150));
@@ -68,70 +68,29 @@ public class Illustrate {
 		this.chooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
 		this.chooser.setAcceptAllFileFilterUsed(false);
 
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
 		JButton load = new JButton("Load");
-		load.setPreferredSize(new Dimension(100, 40));
-		load.setFocusable(false);
-		load.addActionListener(e -> {
-			int val = this.chooser.showOpenDialog(this.frame);
-			if (val == JFileChooser.APPROVE_OPTION) {
-				File f = this.chooser.getSelectedFile();
-				try {
-					this.setCurrentImage(ImageIO.read(f));
-				} catch (IOException exc) {
-					// TODO Fehlermeldung
-					exc.printStackTrace();
-				}
-			}
-		});
 		JButton run = new JButton("Run");
-		run.setPreferredSize(new Dimension(100, 40));
-		run.setFocusable(false);
 
-		GridBagConstraints c = new GridBagConstraints();
-		c.insets = new Insets(5, 10, 5, 10);
-		c.fill = GridBagConstraints.NONE;
-		c.anchor = GridBagConstraints.CENTER;
-		c.weightx = 1;
-		c.weighty = 2;
-		panel.add(this.original, c);
-		c.gridx = 1;
-		panel.add(this.preview, c);
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 2;
-		c.weighty = 1;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.CENTER;
-		panel.add(this.iterations.getComponent(), c);
-		c.gridy = 2;
-		panel.add(this.samples.getComponent(), c);
+		this.setUpComponents(load, run);
 
-		// TODO ACTION LISTENER
-
-		c.gridy = 3;
-		c.anchor = GridBagConstraints.EAST;
-		c.fill = GridBagConstraints.NONE;
-		c.gridwidth = 1;
-		panel.add(load, c);
-		c.gridx = 1;
-		c.anchor = GridBagConstraints.WEST;
-		panel.add(run, c);
-
-		try {
-			this.setCurrentImage(ImageIO.read(DEFAULT_IMG_PATH));
-		} catch (IOException e) {
-			this.currentImage = new BufferedImage(150, 150, BufferedImage.TYPE_INT_ARGB);
-			this.original.setText("<html>   Failure loading<p>   default image.</html>");
-		}
-		this.frame.add(panel);
+		this.setUpLayout(load, run);
 	}
 
+	/**
+	 * Returns the used frame.
+	 * 
+	 * @return frame holding the GUI
+	 */
 	public JFrame getFrame() {
 		return this.frame;
 	}
 
+	/**
+	 * Updates the current image and starts calculating the preview.
+	 * 
+	 * @param img
+	 *            new image
+	 */
 	public final void setCurrentImage(BufferedImage img) {
 		this.currentImage = img;
 		BufferedImage preImg = scaleToBorders(img, PREVIEW_WIDTH, PREVIEW_HEIGHT);
@@ -150,16 +109,107 @@ public class Illustrate {
 		});
 	}
 
+	/**
+	 * Scales an image without distortion to match the specified borders.
+	 * 
+	 * @param src
+	 *            source image
+	 * @param maxWidth
+	 *            width border
+	 * @param maxHeight
+	 *            height border
+	 * @return the scaled image
+	 */
 	public static BufferedImage scaleToBorders(BufferedImage src, int maxWidth, int maxHeight) {
 		double scale = Math.min((double) maxWidth / src.getWidth(), (double) maxHeight / src.getHeight());
 		return scale(src, scale, scale);
 	}
 
+	/**
+	 * Scales an image with the specified factors.
+	 * 
+	 * @param src
+	 *            source image
+	 * @param scaleWidth
+	 *            width scale factor
+	 * @param scaleHeight
+	 *            height scale factor
+	 * @return the scaled image
+	 */
 	public static BufferedImage scale(BufferedImage src, double scaleWidth, double scaleHeight) {
 		BufferedImage dest = new BufferedImage((int) Math.ceil(src.getWidth() * scaleWidth),
 				(int) Math.ceil(src.getHeight() * scaleHeight), src.getType());
 		Graphics2D g = dest.createGraphics();
 		g.drawRenderedImage(src, AffineTransform.getScaleInstance(scaleWidth, scaleHeight));
 		return dest;
+	}
+
+	private void setUpComponents(JButton load, JButton run) {
+		this.frame.setMinimumSize(new Dimension(400, 400));
+		this.frame.setResizable(false);
+		this.frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Illustrate.this.executor.shutdown();
+			}
+		});
+		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		load.setPreferredSize(new Dimension(100, 40));
+		load.setFocusable(false);
+		load.addActionListener(e -> {
+			int val = this.chooser.showOpenDialog(this.frame);
+			if (val == JFileChooser.APPROVE_OPTION) {
+				File f = this.chooser.getSelectedFile();
+				try {
+					this.setCurrentImage(ImageIO.read(f));
+				} catch (IOException exc) {
+					// TODO Fehlermeldung
+					exc.printStackTrace();
+				}
+			}
+		});
+		run.setPreferredSize(new Dimension(100, 40));
+		run.setFocusable(false);
+
+		try {
+			this.setCurrentImage(ImageIO.read(DEFAULT_IMG_PATH));
+		} catch (IOException e) {
+			this.currentImage = new BufferedImage(150, 150, BufferedImage.TYPE_INT_ARGB);
+			this.original.setText("<html>   Failure loading<p>   default image.</html>");
+		}
+	}
+
+	private void setUpLayout(JButton load, JButton run) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+
+		c.insets = new Insets(5, 10, 5, 10);
+		c.fill = GridBagConstraints.NONE;
+		c.anchor = GridBagConstraints.CENTER;
+		c.weightx = 1;
+		c.weighty = 2;
+		panel.add(this.original, c);
+		c.gridx = 1;
+		panel.add(this.preview, c);
+		c.gridx = 0;
+		c.gridy = 1;
+		c.gridwidth = 2;
+		c.weighty = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.CENTER;
+		panel.add(this.iterations.getComponent(), c);
+		c.gridy = 2;
+		panel.add(this.samples.getComponent(), c);
+		c.gridy = 3;
+		c.anchor = GridBagConstraints.EAST;
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = 1;
+		panel.add(load, c);
+		c.gridx = 1;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(run, c);
+		this.frame.add(panel);
 	}
 }

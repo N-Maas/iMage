@@ -6,16 +6,16 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <groupId>swt1.ub4.a3</groupId>
-  <artifactId>iMage.iLlustrate</artifactId>
+  <artifactId>1975402</artifactId>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
-				<addClasspath>true</addClasspath>
 					<archive>
 						<manifest>
+							<addClasspath>true</addClasspath>
 							<mainClass>gui.GUIApp</mainClass>
 						</manifest>
 					</archive>
