@@ -3,6 +3,7 @@ package gui;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.event.ChangeEvent;
 
@@ -11,36 +12,36 @@ import org.iMage.geometrify.IPrimitive;
 import filter.FilterObserver;
 import filter.ObservableTPFilter;
 
-public class ImageProgression extends StateChanger implements FilterObserver {
+public class FrameProvider extends StateChanger implements FilterObserver {
 	private final ObservableTPFilter filter;
 	private final List<IPrimitive> primitives;
 	private BufferedImage currentImage;
 	private int index;
-	boolean updateImage;
+	boolean liveUpdating;
 
-	public ImageProgression(ObservableTPFilter filter, BufferedImage init) {
-		this.filter = filter;
+	public FrameProvider(ObservableTPFilter filter, BufferedImage init) {
+		this.filter = Objects.requireNonNull(filter);
 		this.currentImage = init;
 		this.primitives = new ArrayList<>();
 		this.index = 0;
 		this.filter.addObserver(this);
-		this.updateImage = true;
+		this.liveUpdating = true;
 	}
 
 	@Override
 	public void update(BufferedImage current, IPrimitive added) {
 		this.primitives.add(added);
-		if (this.updateImage) {
-			this.updateFrame(current, this.primitives.size() - 1);
+		if (this.liveUpdating) {
+			this.updateFrame(current, this.primitives.size());
 		}
 	}
 
-	public boolean isUpdatingImage() {
-		return this.updateImage;
+	public boolean isLiveUpdating() {
+		return this.liveUpdating;
 	}
 
-	public void setImageUpdating(boolean flag) {
-		this.updateImage = flag;
+	public void setLiveUpdating(boolean flag) {
+		this.liveUpdating = flag;
 	}
 
 	public BufferedImage getCurrentFrame() {
@@ -67,18 +68,22 @@ public class ImageProgression extends StateChanger implements FilterObserver {
 			throw new IndexOutOfBoundsException("No frame at this index available.");
 		}
 		BufferedImage result = this.currentImage;
+		int counter = this.index;
 		if (newIndex < this.index) {
 			result = new BufferedImage(this.currentImage.getWidth(), this.currentImage.getHeight(),
 					this.currentImage.getType());
+			counter = 0;
 		}
 
-		for (int counter = newIndex; counter < this.index; counter++) {
+		while (counter < newIndex) {
 			if (Thread.interrupted()) {
 				return;
 			}
 			this.filter.addToImage(result, this.primitives.get(counter));
+			counter++;
 		}
 		this.updateFrame(result, newIndex);
+		assert counter == newIndex;
 	}
 
 	private void updateFrame(BufferedImage current, int newIndex) {

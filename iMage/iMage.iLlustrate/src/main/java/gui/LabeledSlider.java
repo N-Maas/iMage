@@ -1,8 +1,6 @@
 package gui;
 
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -11,7 +9,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  * Represents a slider combined with a JLabel that displays the current value.
@@ -19,7 +16,6 @@ import javax.swing.event.ChangeListener;
  * @author Nikolai
  */
 public class LabeledSlider extends StateChanger {
-	private final List<ChangeListener> cls = new ArrayList<>();
 	private final JPanel panel;
 	private final JSlider slider;
 	private final JLabel label;
