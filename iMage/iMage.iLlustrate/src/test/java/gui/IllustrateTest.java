@@ -9,37 +9,60 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
 
 import org.junit.Before;
 import org.junit.Test;;
 
+/**
+ * Tests the Illustrate class.
+ * 
+ * @author Nikolai
+ */
 public class IllustrateTest {
 	private static final File DEFAULT_IMG_PATH = new File("src/main/resources/Default.png");
 	private BufferedImage defaultImage;
 
+	/**
+	 * Provides the default image for testing.
+	 * 
+	 * @throws IOException
+	 *             if not finding the image
+	 */
 	@Before
 	@Test
 	public void setUp() throws IOException {
 		this.defaultImage = ImageIO.read(DEFAULT_IMG_PATH);
 	}
 
+	/**
+	 * Opens the gui for manual testing.
+	 * 
+	 * @throws InterruptedException
+	 *             if interrupted
+	 */
 	@Test
 	public void guiTest() throws InterruptedException {
-		Illustrate il = new Illustrate();
-		il.getFrame().setVisible(true);
-		il.getFrame().addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				synchronized (IllustrateTest.this) {
-					IllustrateTest.this.notifyAll();
+		SwingUtilities.invokeLater(() -> {
+			Illustrate il = new Illustrate();
+			il.getFrame().addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent e) {
+					synchronized (IllustrateTest.this) {
+						IllustrateTest.this.notifyAll();
+					}
 				}
-			}
+			});
+			il.getFrame().setVisible(true);
 		});
 		synchronized (this) {
 			this.wait();
 		}
 	}
 
+	/**
+	 * Tests the static image scale method of Illustrate.
+	 */
 	@Test
 	public void scaleTest() {
 		BufferedImage sclImage = Illustrate.scaleToBorders(this.defaultImage, 200, 200);

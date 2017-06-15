@@ -9,6 +9,12 @@ import org.iMage.geometrify.RandomPointGenerator;
 import org.iMage.geometrify.TrianglePictureFilter;
 import org.junit.Test;
 
+/**
+ * Tests the observable functionality of the ObservableTPFilter.
+ * 
+ * @author Nikolai
+ *
+ */
 public class ObservableTPFilterTest {
 
 	/**
@@ -28,7 +34,7 @@ public class ObservableTPFilterTest {
 		ObservableTPFilter filter = new ObservableTPFilter(new RandomPointGenerator(test.getWidth(), test.getHeight()));
 		filter.addObserver((a, b) -> count[0]++);
 		filter.addObserver((a, b) -> count[0] -= 2);
-		BufferedImage result = filter.apply(test, numberOfIterations, numberOfSamples);
+		filter.apply(test, numberOfIterations, numberOfSamples);
 		assertEquals(-10, count[0]);
 	}
 }
