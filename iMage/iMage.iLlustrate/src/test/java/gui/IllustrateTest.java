@@ -53,6 +53,7 @@ public class IllustrateTest {
 					}
 				}
 			});
+			il.getFrame().setLocationRelativeTo(null);
 			il.getFrame().setVisible(true);
 		});
 		synchronized (this) {

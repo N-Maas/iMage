@@ -67,6 +67,11 @@ public class ObservableTPFilter extends TrianglePictureFilter implements FilterO
 		return result;
 	}
 
+	@Override
+	public void addToImage(BufferedImage current, IPrimitive primitive) {
+		super.addToImage(current, primitive);
+	}
+
 	/**
 	 * Updates all registered observers.
 	 * 
