@@ -50,6 +50,9 @@ public class ObservableTPFilter extends TrianglePictureFilter implements FilterO
 			IPrimitive bestPrimitive = null;
 
 			for (int s = 0; s < numberOfSamples; s++) {
+				if (Thread.interrupted()) {
+					return result;
+				}
 				IPrimitive sample = this.generatePrimitive();
 				sample.setColor(this.calculateColor(image, sample));
 				int difference = this.calculateDifference(image, result, sample);

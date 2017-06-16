@@ -126,6 +126,7 @@ public class LabeledSlider extends StateChanger {
 		this.slider.setValue(value);
 		this.adjustValue();
 		this.notifyListeners(new ChangeEvent(this));
+		this.slider.repaint();
 	}
 
 	private void adjustValue() {

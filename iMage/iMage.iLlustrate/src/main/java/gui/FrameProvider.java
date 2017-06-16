@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 
 import org.iMage.geometrify.IPrimitive;
@@ -63,6 +64,12 @@ public class FrameProvider extends StateChanger implements FilterObserver {
 		return this.primitives.get(index);
 	}
 
+	public void reset(BufferedImage init) {
+		this.currentImage = init;
+		this.primitives.clear();
+		this.index = 0;
+	}
+
 	public void setFrame(int newIndex) {
 		if (newIndex < 0 || newIndex > this.primitives.size()) {
 			throw new IndexOutOfBoundsException("No frame at this index available.");
@@ -89,6 +96,6 @@ public class FrameProvider extends StateChanger implements FilterObserver {
 	private void updateFrame(BufferedImage current, int newIndex) {
 		this.currentImage = current;
 		this.index = newIndex;
-		this.notifyListeners(new ChangeEvent(this));
+		SwingUtilities.invokeLater(() -> this.notifyListeners(new ChangeEvent(this)));
 	}
 }

@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
@@ -43,7 +44,7 @@ public class Illustrate {
 	private static final int PREVIEW_WIDTH = 150;
 	private static final int PREVIEW_HEIGHT = 150;
 
-	private final ExecutorService executor = Executors.newSingleThreadExecutor();
+	private final ExecutorService executor;
 	private final JFrame frame;
 	private final JLabel original;
 	private final JLabel preview;
@@ -51,11 +52,13 @@ public class Illustrate {
 	private final LabeledSlider samples;
 	private final JFileChooser chooser;
 	private BufferedImage currentImage;
+	private String fileName = "Default.png";
 
 	/**
 	 * Constructor that creates the gui and all needed listeners.
 	 */
 	public Illustrate() {
+		this.executor = Executors.newSingleThreadExecutor();
 		this.frame = new JFrame("iLlustrate");
 
 		this.original = new JLabel();
@@ -150,7 +153,7 @@ public class Illustrate {
 		this.frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Illustrate.this.executor.shutdown();
+				Illustrate.this.executor.shutdownNow();
 			}
 		});
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -160,9 +163,11 @@ public class Illustrate {
 		load.addActionListener(e -> {
 			int val = this.chooser.showOpenDialog(this.frame);
 			if (val == JFileChooser.APPROVE_OPTION) {
-				File f = this.chooser.getSelectedFile();
+				File file = this.chooser.getSelectedFile();
 				try {
-					this.setCurrentImage(ImageIO.read(f));
+					BufferedImage img = ImageIO.read(file);
+					this.setCurrentImage(img);
+					this.fileName = file.getName();
 				} catch (IOException exc) {
 					// TODO Fehlermeldung
 					exc.printStackTrace();
@@ -171,6 +176,16 @@ public class Illustrate {
 		});
 		run.setPreferredSize(new Dimension(100, 40));
 		run.setFocusable(false);
+		run.addActionListener(e -> {
+			FrameView view = new FrameView(this.frame, this.fileName, this.currentImage, this.iterations.getValue(),
+					this.samples.getValue(), this.chooser);
+			JFrame vFrame = view.getFrame();
+			vFrame.setLocationRelativeTo(this.frame);
+			Point p = vFrame.getLocation();
+			vFrame.setLocation(p.x + 100, p.y + 200);
+			vFrame.setVisible(true);
+			view.startCalculation();
+		});
 
 		try {
 			this.setCurrentImage(ImageIO.read(DEFAULT_IMG_PATH));
