@@ -1,5 +1,7 @@
 package gui;
 
+import javax.swing.SwingUtilities;
+
 /**
  * Main class for initialization of iLlustrate.
  * 
@@ -20,8 +22,11 @@ public final class GUIApp {
 	 *            arguments
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		SwingUtilities.invokeLater(() -> {
+			Illustrate il = new Illustrate();
+			il.getFrame().setLocationRelativeTo(null);
+			il.getFrame().setVisible(true);
+		});
 	}
 
 }

@@ -33,12 +33,12 @@ public class LabeledSlider extends StateChanger {
 	 *            initial value
 	 */
 	public LabeledSlider(String labelText, int max, int value) {
-		this(labelText, 0, max, value, 0, true);
+		this(labelText, max, value, 0, 10);
 	}
 
 	/**
-	 * Creates a LabeledSlider with the specified label text, max value, initial
-	 * value and preferred width for the slider.
+	 * Creates a LabeledSlider with the specified label text, puffer size, max
+	 * value, initial value and preferred width for the slider.
 	 * 
 	 * @param labelText
 	 *            text identifier for the value of the slider
@@ -48,9 +48,12 @@ public class LabeledSlider extends StateChanger {
 	 *            initial value
 	 * @param prefWidth
 	 *            preferred width of the slider
+	 * @param puffer
+	 *            value that is added to the width of the label, so it can hold
+	 *            values with more digits
 	 */
-	public LabeledSlider(String labelText, int max, int value, int prefWidth) {
-		this(labelText, 0, max, value, prefWidth, true);
+	public LabeledSlider(String labelText, int max, int value, int prefWidth, int puffer) {
+		this(labelText, 0, max, value, prefWidth, puffer, true);
 	}
 
 	/**
@@ -71,8 +74,11 @@ public class LabeledSlider extends StateChanger {
 	 * @param labelLeft
 	 *            if true, the label is aligned left of the slider, otherwise
 	 *            right
+	 * @param puffer
+	 *            value that is added to the width of the label, so it can hold
+	 *            values with more digits
 	 */
-	public LabeledSlider(String labelText, int min, int max, int value, int prefWidth, boolean labelLeft) {
+	public LabeledSlider(String labelText, int min, int max, int value, int prefWidth, int puffer, boolean labelLeft) {
 		this.labelText = labelText;
 		this.panel = new JPanel();
 		BoxLayout layout = new BoxLayout(this.panel, BoxLayout.X_AXIS);
@@ -81,7 +87,7 @@ public class LabeledSlider extends StateChanger {
 		this.label.setAlignmentY(1);
 
 		this.slider = new JSlider(min, max, value);
-		this.setUpSlider(min, max, value, prefWidth, labelLeft);
+		this.setUpSlider(min, max, value, prefWidth, puffer, labelLeft);
 	}
 
 	/**
@@ -133,10 +139,10 @@ public class LabeledSlider extends StateChanger {
 		this.label.setText(this.labelText + " (" + this.getValue() + ")");
 	}
 
-	private void setUpSlider(int min, int max, int value, int prefWidth, boolean labelLeft) {
+	private void setUpSlider(int min, int max, int value, int prefWidth, int puffer, boolean labelLeft) {
 		Dimension labelPrefSize = this.label.getPreferredSize();
-		this.label
-				.setPreferredSize(new Dimension((int) labelPrefSize.getWidth() + 10, (int) labelPrefSize.getHeight()));
+		this.label.setPreferredSize(
+				new Dimension((int) labelPrefSize.getWidth() + puffer, (int) labelPrefSize.getHeight()));
 
 		this.slider.setAlignmentY(0.5f);
 		this.slider.setPaintTicks(true);
@@ -149,14 +155,15 @@ public class LabeledSlider extends StateChanger {
 				this.notifyListeners(new ChangeEvent(this));
 			}
 		});
+
+		this.panel.add(labelLeft ? this.label : this.slider);
 		if (prefWidth > 0) {
 			Dimension prefSize = this.slider.getPreferredSize();
 			this.slider.setPreferredSize(new Dimension(prefWidth, (int) prefSize.getHeight()));
 			this.slider.setMaximumSize(new Dimension(prefWidth, (int) prefSize.getHeight()));
+			this.panel.add(Box.createHorizontalGlue());
 		}
-
-		this.panel.add(labelLeft ? this.label : this.slider);
-		this.panel.add(prefWidth <= 0 ? Box.createHorizontalStrut(10) : Box.createHorizontalGlue());
+		this.panel.add(Box.createHorizontalStrut(10));
 		this.panel.add(labelLeft ? this.slider : this.label);
 	}
 }

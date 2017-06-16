@@ -65,8 +65,8 @@ public class Illustrate {
 		this.original.setPreferredSize(new Dimension(150, 150));
 		this.preview = new JLabel();
 		this.preview.setPreferredSize(new Dimension(150, 150));
-		this.iterations = new LabeledSlider("Iterations", ITERATIONS_MAX, ITERATIONS_DEFAULT, 250);
-		this.samples = new LabeledSlider("Samples", SAMPLES_MAX, SAMPLES_DEFAULT, 250);
+		this.iterations = new LabeledSlider("Iterations", ITERATIONS_MAX, ITERATIONS_DEFAULT, 250, 10);
+		this.samples = new LabeledSlider("Samples", SAMPLES_MAX, SAMPLES_DEFAULT, 250, 10);
 		this.chooser = new JFileChooser();
 		this.chooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
 		this.chooser.setAcceptAllFileFilterUsed(false);

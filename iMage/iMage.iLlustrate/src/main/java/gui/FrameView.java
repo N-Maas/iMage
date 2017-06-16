@@ -39,7 +39,7 @@ public class FrameView {
 		int width = src.getWidth();
 		int height = src.getHeight();
 		this.executor = Executors.newSingleThreadExecutor();
-		this.frame = new JFrame(fileName + " (" + iterations + " iterations, " + samples + ")");
+		this.frame = new JFrame(fileName + " (" + iterations + " iterations, " + samples + " samples)");
 		ObservableTPFilter filter = new ObservableTPFilter(new RandomPointGenerator(width, height));
 		this.provider = new FrameProvider(filter, new BufferedImage(width, height, src.getType()));
 
@@ -51,7 +51,7 @@ public class FrameView {
 			}
 		};
 		imagePanel.setPreferredSize(new Dimension(width, height));
-		LabeledSlider slider = new LabeledSlider("Snapshot", 0, iterations, 0, 0, false);
+		LabeledSlider slider = new LabeledSlider("Snapshot", 0, iterations, 0, 0, 30, false);
 		JButton save = new JButton("Save");
 
 		ChangeListener cl = e -> slider.setValue(this.provider.getCurrentIndex());
@@ -142,6 +142,7 @@ public class FrameView {
 		panel.add(check);
 		panel.add(Box.createHorizontalGlue());
 		panel.add(save);
+		panel.add(Box.createHorizontalStrut(10));
 
 		this.frame.add(imgPanel);
 		this.frame.add(panel, BorderLayout.NORTH);
