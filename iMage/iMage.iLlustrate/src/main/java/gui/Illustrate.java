@@ -37,7 +37,7 @@ import filter.ObservableTPFilter;
  * @author Nikolai
  */
 public class Illustrate {
-	private static final File DEFAULT_IMG_PATH = new File("src/main/resources/Default.png");
+	private static final String DEFAULT_IMG = "/Default.png";
 	private static final int ITERATIONS_MAX = 2000;
 	private static final int ITERATIONS_DEFAULT = 100;
 	private static final int SAMPLES_MAX = 200;
@@ -185,8 +185,8 @@ public class Illustrate {
 					this.setCurrentImage(img);
 					this.fileName = file.getName();
 				} catch (IOException exc) {
-					// TODO Fehlermeldung
-					exc.printStackTrace();
+					JOptionPane.showMessageDialog(this.frame, "Error loading file.", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -205,7 +205,7 @@ public class Illustrate {
 		});
 
 		try {
-			this.setCurrentImage(ImageIO.read(DEFAULT_IMG_PATH));
+			this.setCurrentImage(ImageIO.read(this.getClass().getResource(DEFAULT_IMG)));
 		} catch (IOException e) {
 			this.currentImage = new BufferedImage(150, 150, BufferedImage.TYPE_INT_ARGB);
 			this.original.setText("<html>   Failure loading<p>   default image.</html>");

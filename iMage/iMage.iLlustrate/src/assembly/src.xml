@@ -9,10 +9,8 @@
 	</formats>
 	<fileSets>
 		<fileSet>
-		<useDefaultExcludes>false</useDefaultExcludes>
 			<includes>
 				<include>pom.xml</include>
-				<include>.gitignore</include>
 			</includes>
 		</fileSet>
 

@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
@@ -19,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -28,14 +28,33 @@ import org.iMage.geometrify.RandomPointGenerator;
 
 import filter.ObservableTPFilter;
 
+/**
+ * Applies the filter to the image and holds a frame that can shows every step
+ * of the calculation. Uses a FrameProvider for holding the calculation data.
+ * 
+ * @author Nikolai
+ */
 public class FrameView {
 	private final ExecutorService executor;
 	private final Runnable task;
 	private final FrameProvider provider;
 	private final JFrame frame;
 
-	public FrameView(Component parent, String fileName, BufferedImage src, int iterations, int samples,
-			JFileChooser chooser) {
+	/**
+	 * Creates a new FrameView with the specified parameters.
+	 * 
+	 * @param fileName
+	 *            name of the file that provides the image
+	 * @param src
+	 *            source image for the calculation
+	 * @param iterations
+	 *            number of iterations
+	 * @param samples
+	 *            number of samples
+	 * @param chooser
+	 *            JFileChooser for saving the results
+	 */
+	public FrameView(String fileName, BufferedImage src, int iterations, int samples, JFileChooser chooser) {
 		int width = src.getWidth();
 		int height = src.getHeight();
 		this.executor = Executors.newSingleThreadExecutor();
@@ -43,38 +62,7 @@ public class FrameView {
 		ObservableTPFilter filter = new ObservableTPFilter(new RandomPointGenerator(width, height));
 		this.provider = new FrameProvider(filter, new BufferedImage(width, height, src.getType()));
 
-		JCheckBox check = new JCheckBox("Continuous Updates");
-		JPanel imagePanel = new JPanel() {
-			@Override
-			public void paint(Graphics g) {
-				g.drawImage(FrameView.this.provider.getCurrentFrame(), 0, 0, null);
-			}
-		};
-		imagePanel.setPreferredSize(new Dimension(width, height));
-		LabeledSlider slider = new LabeledSlider("Snapshot", 0, iterations, 0, 0, 30, false);
-		JButton save = new JButton("Save");
-
-		ChangeListener cl = e -> slider.setValue(this.provider.getCurrentIndex());
-		this.provider.addChangeListener(cl);
-
-		this.task = () -> {
-			filter.apply(src, iterations, samples);
-			this.provider.setFrame(this.provider.getSize());
-			SwingUtilities.invokeLater(() -> {
-				slider.addChangeListener(e -> {
-					this.executor.submit(() -> {
-						this.provider.setFrame(slider.getValue());
-					});
-				});
-				this.frame.repaint();
-				this.provider.removeChangeListener(cl);
-				check.setSelected(false);
-				check.setEnabled(false);
-				slider.getSlider().setEnabled(true);
-				save.setEnabled(true);
-			});
-		};
-		this.setUpComponents(parent, imagePanel, check, save, slider, chooser);
+		this.task = this.setUp(filter, src, iterations, samples, chooser);
 	}
 
 	/**
@@ -86,10 +74,19 @@ public class FrameView {
 		return this.frame;
 	}
 
+	/**
+	 * Returns the FrameProvider that holds the data for displaying the image.
+	 * 
+	 * @return the provider
+	 */
 	public FrameProvider getProvider() {
 		return this.provider;
 	}
 
+	/**
+	 * Starts the calculation. Returns immediately, passing the calculation to a
+	 * parallel thread.
+	 */
 	public void startCalculation() {
 		if (this.provider.getSize() > 0) {
 			throw new IllegalStateException("Image already calculated.");
@@ -97,7 +94,7 @@ public class FrameView {
 		this.executor.submit(this.task);
 	}
 
-	private void setUpComponents(Component parent, JPanel imgPanel, JCheckBox check, JButton save, LabeledSlider slider,
+	private Runnable setUp(ObservableTPFilter filter, BufferedImage src, int iterations, int samples,
 			JFileChooser chooser) {
 		this.frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -111,6 +108,17 @@ public class FrameView {
 			}
 		});
 		this.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+		JCheckBox check = new JCheckBox("Continuous Updates");
+		LabeledSlider slider = new LabeledSlider("Snapshot", 0, iterations, 0, 0, 30, false);
+		JButton save = new JButton("Save");
+		JPanel imagePanel = new JPanel() {
+			@Override
+			public void paint(Graphics g) {
+				g.drawImage(FrameView.this.provider.getCurrentFrame(), 0, 0, null);
+			}
+		};
+		imagePanel.setPreferredSize(new Dimension(src.getWidth(), src.getHeight()));
 
 		check.setSelected(true);
 		check.setFocusable(false);
@@ -129,12 +137,13 @@ public class FrameView {
 				try {
 					ImageIO.write(this.provider.getCurrentFrame(), "png", file);
 				} catch (IOException exc) {
-					// TODO Fehlermeldung
-					exc.printStackTrace();
+					JOptionPane.showMessageDialog(this.frame, "Error saving file.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
 
+		ChangeListener cl = e -> slider.setValue(this.provider.getCurrentIndex());
+		this.provider.addChangeListener(cl);
 		this.provider.addChangeListener(e -> this.frame.repaint());
 		check.addChangeListener(e -> this.provider.setLiveUpdating(check.isSelected()));
 
@@ -145,11 +154,29 @@ public class FrameView {
 		panel.add(save);
 		panel.add(Box.createHorizontalStrut(10));
 
-		this.frame.add(imgPanel);
+		this.frame.add(imagePanel);
 		this.frame.add(panel, BorderLayout.NORTH);
 		this.frame.add(slider.getComponent(), BorderLayout.SOUTH);
 
 		this.frame.pack();
 		this.frame.setResizable(false);
+
+		return () -> {
+			filter.apply(src, iterations, samples);
+			this.provider.setFrame(this.provider.getSize());
+			SwingUtilities.invokeLater(() -> {
+				slider.addChangeListener(e -> {
+					this.executor.submit(() -> {
+						this.provider.setFrame(slider.getValue());
+					});
+				});
+				this.frame.repaint();
+				this.provider.removeChangeListener(cl);
+				check.setSelected(false);
+				check.setEnabled(false);
+				slider.getSlider().setEnabled(true);
+				save.setEnabled(true);
+			});
+		};
 	}
 }

@@ -6,6 +6,11 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * Abstract superclass for classes that fire ChangeEvents.
+ * 
+ * @author Nikolai
+ */
 public abstract class StateChanger {
 	private final List<ChangeListener> cls = new ArrayList<>();
 
@@ -30,6 +35,12 @@ public abstract class StateChanger {
 		return this.cls.remove(cl);
 	}
 
+	/**
+	 * Usable by subclasses for notifying the listeners.
+	 * 
+	 * @param e
+	 *            event that is passed to the listeners
+	 */
 	protected void notifyListeners(ChangeEvent e) {
 		for (ChangeListener cl : this.cls) {
 			cl.stateChanged(e);

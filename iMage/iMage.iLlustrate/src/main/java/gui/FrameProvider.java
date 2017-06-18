@@ -13,6 +13,13 @@ import org.iMage.geometrify.IPrimitive;
 import filter.FilterObserver;
 import filter.ObservableTPFilter;
 
+/**
+ * An instance of this class holds all information required to display different
+ * frames of the image calculation process.
+ * 
+ * @author Nikolai
+ *
+ */
 public class FrameProvider extends StateChanger implements FilterObserver {
 	private final ObservableTPFilter filter;
 	private final List<IPrimitive> primitives;
@@ -20,6 +27,14 @@ public class FrameProvider extends StateChanger implements FilterObserver {
 	private int index;
 	boolean liveUpdating;
 
+	/**
+	 * Creates a FrameProvider for the specified filter and image.
+	 * 
+	 * @param filter
+	 *            observable filter that is applied to the image
+	 * @param init
+	 *            initial image (usually empty)
+	 */
 	public FrameProvider(ObservableTPFilter filter, BufferedImage init) {
 		this.filter = Objects.requireNonNull(filter);
 		this.currentImage = init;
@@ -37,26 +52,59 @@ public class FrameProvider extends StateChanger implements FilterObserver {
 		}
 	}
 
+	/**
+	 * Gets whether the image is updated live with the calculation.
+	 * 
+	 * @return live updating
+	 */
 	public boolean isLiveUpdating() {
 		return this.liveUpdating;
 	}
 
+	/**
+	 * Sets whether the image should be updated live with the calculation.
+	 * 
+	 * @param flag
+	 *            specifies live updating
+	 */
 	public void setLiveUpdating(boolean flag) {
 		this.liveUpdating = flag;
 	}
 
+	/**
+	 * Returns the image pf the currently set frame.
+	 * 
+	 * @return image of current frame
+	 */
 	public BufferedImage getCurrentFrame() {
 		return this.currentImage;
 	}
 
+	/**
+	 * Returns the index of the currently set frame.
+	 * 
+	 * @return index of current frame
+	 */
 	public int getCurrentIndex() {
 		return this.index;
 	}
 
+	/**
+	 * Return the number of applied primitives (= number of frames - 1).
+	 * 
+	 * @return number of primitives
+	 */
 	public int getSize() {
 		return this.primitives.size();
 	}
 
+	/**
+	 * Gets the primitive at the specified index.
+	 * 
+	 * @param index
+	 *            index of the primitive
+	 * @return the primitive
+	 */
 	public IPrimitive getPrimitive(int index) {
 		if (index < 0 || index >= this.primitives.size()) {
 			throw new IndexOutOfBoundsException("No primitive at this index available.");
@@ -64,12 +112,25 @@ public class FrameProvider extends StateChanger implements FilterObserver {
 		return this.primitives.get(index);
 	}
 
+	/**
+	 * Resets to the given image and removes all primitives.
+	 * 
+	 * @param init
+	 *            resetting image
+	 */
 	public void reset(BufferedImage init) {
 		this.currentImage = init;
 		this.primitives.clear();
 		this.index = 0;
 	}
 
+	/**
+	 * Calculates the frame for the specified index. The image can be retrieved
+	 * by getCurrentIndex(). Needs calculation time dependent on the set index.
+	 * 
+	 * @param newIndex
+	 *            index of the frame to be calculated
+	 */
 	public void setFrame(int newIndex) {
 		if (newIndex < 0 || newIndex > this.primitives.size()) {
 			throw new IndexOutOfBoundsException("No frame at this index available.");

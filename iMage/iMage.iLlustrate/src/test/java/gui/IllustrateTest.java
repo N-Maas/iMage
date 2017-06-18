@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;;
 
 /**
@@ -41,6 +42,7 @@ public class IllustrateTest {
 	 * @throws InterruptedException
 	 *             if interrupted
 	 */
+	@Ignore
 	@Test
 	public void guiTest() throws InterruptedException {
 		SwingUtilities.invokeLater(() -> {
