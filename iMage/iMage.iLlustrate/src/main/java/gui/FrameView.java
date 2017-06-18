@@ -118,6 +118,7 @@ public class FrameView {
 		save.setPreferredSize(new Dimension(100, 40));
 		save.setFocusable(false);
 		save.setEnabled(false);
+		save.setToolTipText("Saves the picture at the displayed state.");
 		save.addActionListener(e -> {
 			int val = chooser.showSaveDialog(this.frame);
 			if (val == JFileChooser.APPROVE_OPTION) {

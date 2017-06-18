@@ -21,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -43,6 +44,8 @@ public class Illustrate {
 	private static final int SAMPLES_DEFAULT = 30;
 	private static final int PREVIEW_WIDTH = 150;
 	private static final int PREVIEW_HEIGHT = 150;
+	private static final int MAX_WIDTH = 1024;
+	private static final int MAX_HEIGHT = 768;
 
 	private final ExecutorService executor;
 	private final JFrame frame;
@@ -160,12 +163,25 @@ public class Illustrate {
 
 		load.setPreferredSize(new Dimension(100, 40));
 		load.setFocusable(false);
+		load.setToolTipText("Loads a picture and shows a preview.");
 		load.addActionListener(e -> {
 			int val = this.chooser.showOpenDialog(this.frame);
 			if (val == JFileChooser.APPROVE_OPTION) {
 				File file = this.chooser.getSelectedFile();
 				try {
 					BufferedImage img = ImageIO.read(file);
+					// tests the size
+					if (img.getWidth() > MAX_WIDTH || img.getHeight() > MAX_HEIGHT) {
+						int option = JOptionPane.showConfirmDialog(this.frame,
+								"<html>The selected image is too big for efficient calculation.<p>"
+										+ "The image will be scaled down.</html>",
+								"Scaling required", JOptionPane.OK_CANCEL_OPTION);
+						if (option == JOptionPane.OK_OPTION) {
+							img = scaleToBorders(img, MAX_WIDTH, MAX_HEIGHT);
+						} else {
+							return;
+						}
+					}
 					this.setCurrentImage(img);
 					this.fileName = file.getName();
 				} catch (IOException exc) {
@@ -176,8 +192,9 @@ public class Illustrate {
 		});
 		run.setPreferredSize(new Dimension(100, 40));
 		run.setFocusable(false);
+		run.setToolTipText("Starts the calculation.");
 		run.addActionListener(e -> {
-			FrameView view = new FrameView(this.frame, this.fileName, this.currentImage, this.iterations.getValue(),
+			FrameView view = new FrameView(this.fileName, this.currentImage, this.iterations.getValue(),
 					this.samples.getValue(), this.chooser);
 			JFrame vFrame = view.getFrame();
 			vFrame.setLocationRelativeTo(this.frame);
