@@ -2,7 +2,7 @@ package filter;
 
 import java.awt.image.BufferedImage;
 
-import org.iMage.geometrify.IPrimitive;
+import org.iMage.geometrify.ColoredPrimitive;
 
 /**
  * An observer that observes Filters and receives primitives and new image
@@ -20,5 +20,5 @@ public interface FilterObserver {
 	 * @param added
 	 *            last added primitive
 	 */
-	void update(BufferedImage current, IPrimitive added);
+	void update(BufferedImage current, ColoredPrimitive added);
 }

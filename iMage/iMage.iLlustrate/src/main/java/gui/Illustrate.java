@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiFunction;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -26,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.iMage.geometrify.RandomPointGenerator;
+import org.iMage.geometrify.IPrimitiveGenerator;
 
 import filter.ObservableTPFilter;
 
@@ -54,13 +55,14 @@ public class Illustrate {
 	private final LabeledSlider iterations;
 	private final LabeledSlider samples;
 	private final JFileChooser chooser;
+	private final BiFunction<Integer, Integer, IPrimitiveGenerator> genFunction;
 	private BufferedImage currentImage;
 	private String fileName = "Default.png";
 
 	/**
 	 * Constructor that creates the gui and all needed listeners.
 	 */
-	public Illustrate() {
+	public Illustrate(BiFunction<Integer, Integer, IPrimitiveGenerator> genFunction) {
 		this.executor = Executors.newSingleThreadExecutor();
 		this.frame = new JFrame("iLlustrate");
 
@@ -73,6 +75,7 @@ public class Illustrate {
 		this.chooser = new JFileChooser();
 		this.chooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
 		this.chooser.setAcceptAllFileFilterUsed(false);
+		this.genFunction = genFunction;
 
 		JButton load = new JButton("Load");
 		JButton run = new JButton("Run");
@@ -105,7 +108,7 @@ public class Illustrate {
 		this.preview.setIcon(null);
 		this.preview.setText("   Loading...   ");
 		ObservableTPFilter filter = new ObservableTPFilter(
-				new RandomPointGenerator(preImg.getWidth(), preImg.getHeight()));
+				this.genFunction.apply(preImg.getWidth(), preImg.getHeight()));
 		this.executor.submit(() -> {
 			BufferedImage preview = filter.apply(preImg, ITERATIONS_DEFAULT, SAMPLES_DEFAULT);
 			SwingUtilities.invokeLater(() -> {
@@ -194,8 +197,9 @@ public class Illustrate {
 		run.setFocusable(false);
 		run.setToolTipText("Starts the calculation.");
 		run.addActionListener(e -> {
-			FrameView view = new FrameView(this.fileName, this.currentImage, this.iterations.getValue(),
-					this.samples.getValue(), this.chooser);
+			FrameView view = new FrameView(this.fileName, this.currentImage,
+					this.genFunction.apply(this.currentImage.getWidth(), this.currentImage.getHeight()),
+					this.iterations.getValue(), this.samples.getValue(), this.chooser);
 			JFrame vFrame = view.getFrame();
 			vFrame.setLocationRelativeTo(this.frame);
 			Point p = vFrame.getLocation();

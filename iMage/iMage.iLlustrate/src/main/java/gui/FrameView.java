@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeListener;
 
-import org.iMage.geometrify.RandomPointGenerator;
+import org.iMage.geometrify.IPrimitiveGenerator;
 
 import filter.ObservableTPFilter;
 
@@ -54,12 +54,13 @@ public class FrameView {
 	 * @param chooser
 	 *            JFileChooser for saving the results
 	 */
-	public FrameView(String fileName, BufferedImage src, int iterations, int samples, JFileChooser chooser) {
+	public FrameView(String fileName, BufferedImage src, IPrimitiveGenerator generator, int iterations, int samples,
+			JFileChooser chooser) {
 		int width = src.getWidth();
 		int height = src.getHeight();
 		this.executor = Executors.newSingleThreadExecutor();
 		this.frame = new JFrame(fileName + " (" + iterations + " iterations, " + samples + " samples)");
-		ObservableTPFilter filter = new ObservableTPFilter(new RandomPointGenerator(width, height));
+		ObservableTPFilter filter = new ObservableTPFilter(generator);
 		this.provider = new FrameProvider(filter, new BufferedImage(width, height, src.getType()));
 
 		this.task = this.setUp(filter, src, iterations, samples, chooser);

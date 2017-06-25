@@ -8,6 +8,7 @@ import java.util.Objects;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 
+import org.iMage.geometrify.ColoredPrimitive;
 import org.iMage.geometrify.IPrimitive;
 
 import filter.FilterObserver;
@@ -22,7 +23,7 @@ import filter.ObservableTPFilter;
  */
 public class FrameProvider extends StateChanger implements FilterObserver {
 	private final ObservableTPFilter filter;
-	private final List<IPrimitive> primitives;
+	private final List<ColoredPrimitive> primitives;
 	private BufferedImage currentImage;
 	private int index;
 	boolean liveUpdating;
@@ -45,7 +46,7 @@ public class FrameProvider extends StateChanger implements FilterObserver {
 	}
 
 	@Override
-	public void update(BufferedImage current, IPrimitive added) {
+	public void update(BufferedImage current, ColoredPrimitive added) {
 		this.primitives.add(added);
 		if (this.liveUpdating) {
 			this.updateFrame(current, this.primitives.size());
@@ -147,7 +148,8 @@ public class FrameProvider extends StateChanger implements FilterObserver {
 			if (Thread.interrupted()) {
 				return;
 			}
-			this.filter.addToImage(result, this.primitives.get(counter));
+			ColoredPrimitive primitive = this.primitives.get(counter);
+			this.filter.addToImage(result, primitive, primitive.getColor());
 			counter++;
 		}
 		this.updateFrame(result, newIndex);

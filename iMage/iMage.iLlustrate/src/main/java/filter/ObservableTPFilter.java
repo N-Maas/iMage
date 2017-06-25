@@ -1,21 +1,24 @@
 package filter;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.iMage.geometrify.IPointGenerator;
+import org.iMage.geometrify.ColoredPrimitive;
+import org.iMage.geometrify.GeneralPrimitivePictureFilter;
 import org.iMage.geometrify.IPrimitive;
-import org.iMage.geometrify.TrianglePictureFilter;
+import org.iMage.geometrify.IPrimitiveGenerator;
 
 /**
  * Subclass of TrianglePictureFilter that adds observable functionality.
  * 
  * @author Nikolai
  */
-public class ObservableTPFilter extends TrianglePictureFilter implements FilterObservable {
+public class ObservableTPFilter extends GeneralPrimitivePictureFilter implements FilterObservable {
 	private final List<FilterObserver> obs = new ArrayList<>();
+	private BufferedImage currentImage = null;
 
 	/**
 	 * Creates an ObservableTPFilter.
@@ -23,8 +26,8 @@ public class ObservableTPFilter extends TrianglePictureFilter implements FilterO
 	 * @param pointGenerator
 	 *            the RandomPointGenerator
 	 */
-	public ObservableTPFilter(IPointGenerator pointGenerator) {
-		super(pointGenerator);
+	public ObservableTPFilter(IPrimitiveGenerator generator) {
+		super(generator);
 	}
 
 	@Override
@@ -38,41 +41,15 @@ public class ObservableTPFilter extends TrianglePictureFilter implements FilterO
 	}
 
 	@Override
-	public BufferedImage apply(BufferedImage image, int numberOfIterations, int numberOfSamples) {
-		int width = image.getWidth();
-		int height = image.getHeight();
-
-		// construct "empty" image
-		BufferedImage result = new BufferedImage(width, height, image.getType());
-
-		for (int i = 0; i < numberOfIterations; i++) {
-			int bestDifference = Integer.MAX_VALUE;
-			IPrimitive bestPrimitive = null;
-
-			for (int s = 0; s < numberOfSamples; s++) {
-				if (Thread.interrupted()) {
-					return result;
-				}
-				IPrimitive sample = this.generatePrimitive();
-				sample.setColor(this.calculateColor(image, sample));
-				int difference = this.calculateDifference(image, result, sample);
-
-				if (difference <= bestDifference) {
-					bestDifference = difference;
-					bestPrimitive = sample;
-				}
-			}
-
-			this.addToImage(result, bestPrimitive);
-			this.notifyObservers(result, bestPrimitive);
-		}
-
-		return result;
+	public synchronized BufferedImage apply(BufferedImage image, int numberOfIterations, int numberOfSamples) {
+		this.currentImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+		return super.apply(image, numberOfIterations, numberOfSamples);
 	}
 
 	@Override
-	public void addToImage(BufferedImage current, IPrimitive primitive) {
-		super.addToImage(current, primitive);
+	protected void processIteration(int[][] newData, IPrimitive primitive, Color c) {
+		this.addToImage(this.currentImage, primitive, c);
+		this.notifyObservers(this.currentImage, new ColoredPrimitive(primitive, c));
 	}
 
 	/**
@@ -83,9 +60,9 @@ public class ObservableTPFilter extends TrianglePictureFilter implements FilterO
 	 * @param ip
 	 *            last added primitive
 	 */
-	protected void notifyObservers(BufferedImage img, IPrimitive ip) {
+	protected void notifyObservers(BufferedImage img, ColoredPrimitive cp) {
 		for (FilterObserver fObs : this.obs) {
-			fObs.update(img, ip);
+			fObs.update(img, cp);
 		}
 	}
 }
