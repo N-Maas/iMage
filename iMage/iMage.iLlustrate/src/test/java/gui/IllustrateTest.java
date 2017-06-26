@@ -11,6 +11,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
+import org.iMage.geometrify.TriangleGenerator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;;
@@ -46,7 +47,7 @@ public class IllustrateTest {
 	@Test
 	public void guiTest() throws InterruptedException {
 		SwingUtilities.invokeLater(() -> {
-			Illustrate il = new Illustrate();
+			Illustrate il = new Illustrate((x, y) -> new TriangleGenerator(x, y));
 			il.getFrame().addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent e) {

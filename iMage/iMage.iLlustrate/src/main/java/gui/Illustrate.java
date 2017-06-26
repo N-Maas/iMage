@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.iMage.geometrify.IPrimitiveGenerator;
+import org.iMage.geometrify.PrimitiveGenerator;
 
 import filter.ObservableTPFilter;
 
@@ -55,14 +55,14 @@ public class Illustrate {
 	private final LabeledSlider iterations;
 	private final LabeledSlider samples;
 	private final JFileChooser chooser;
-	private final BiFunction<Integer, Integer, IPrimitiveGenerator> genFunction;
+	private final BiFunction<Integer, Integer, PrimitiveGenerator> genFunction;
 	private BufferedImage currentImage;
 	private String fileName = "Default.png";
 
 	/**
 	 * Constructor that creates the gui and all needed listeners.
 	 */
-	public Illustrate(BiFunction<Integer, Integer, IPrimitiveGenerator> genFunction) {
+	public Illustrate(BiFunction<Integer, Integer, PrimitiveGenerator> genFunction) {
 		this.executor = Executors.newSingleThreadExecutor();
 		this.frame = new JFrame("iLlustrate");
 

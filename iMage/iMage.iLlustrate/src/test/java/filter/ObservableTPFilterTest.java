@@ -5,8 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.iMage.geometrify.RandomPointGenerator;
-import org.iMage.geometrify.TrianglePictureFilter;
+import org.iMage.geometrify.TriangleGenerator;
 import org.junit.Test;
 
 /**
@@ -31,7 +30,7 @@ public class ObservableTPFilterTest {
 		int[] count = { 0 };
 
 		BufferedImage test = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
-		ObservableTPFilter filter = new ObservableTPFilter(new RandomPointGenerator(test.getWidth(), test.getHeight()));
+		ObservableTPFilter filter = new ObservableTPFilter(new TriangleGenerator(test.getWidth(), test.getHeight()));
 		filter.addObserver((a, b) -> count[0]++);
 		filter.addObserver((a, b) -> count[0] -= 2);
 		filter.apply(test, numberOfIterations, numberOfSamples);

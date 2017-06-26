@@ -146,7 +146,7 @@ public class GeneralIPrimitivePictureFilterTest {
 	 */
 	@Test
 	public void applyNoAlphaTest() {
-		IPrimitiveGenerator gen = new RectangleGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight());
+		PrimitiveGenerator gen = new RectangleGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight());
 		// gen.setBounds(PolygonGenerator.RANDOM_BOUNDS);
 		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(gen, 0.45f);
 		BufferedImage image = filter.apply(this.imageNoAlpha, 500, 30);
@@ -167,7 +167,7 @@ public class GeneralIPrimitivePictureFilterTest {
 	 */
 	@Test
 	public void applyAlphaTest() {
-		IPrimitiveGenerator gen = new RectangleGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight());
+		PrimitiveGenerator gen = new RectangleGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight());
 		// gen.setBounds(PolygonGenerator.RANDOM_BOUNDS);
 		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(gen, 0.45f);
 		BufferedImage image = filter.apply(this.imageAlpha, 800, 50);

@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class PolygonGenerator implements IPrimitiveGenerator {
+public class PolygonGenerator implements PrimitiveGenerator {
 	public static final int RANDOM_BOUNDS = -42, NO_BOUNDS = -43;
 	private final Random r = new Random();
 	private final int width;

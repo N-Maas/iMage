@@ -21,7 +21,7 @@ import org.junit.Test;
  * @version 1.0
  */
 public class IPDTrianglePictureFilterTest {
-	private ITriangle triangleUpperLeft, triangleLowerLeft;
+	private Triangle triangleUpperLeft, triangleLowerLeft;
 	private GeneralPrimitivePictureFilter filter;
 
 	/**
@@ -32,9 +32,9 @@ public class IPDTrianglePictureFilterTest {
 		Point a = new Point(0, 0);
 		Point b = new Point(0, 1);
 		Point c = new Point(1, 0);
-		this.triangleUpperLeft = new ITriangle(a, b, c);
+		this.triangleUpperLeft = new Triangle(a, b, c);
 		c = new Point(1, 1);
-		this.triangleLowerLeft = new ITriangle(a, b, c);
+		this.triangleLowerLeft = new Triangle(a, b, c);
 		this.filter = new GeneralPrimitivePictureFilter(
 				new TestTriangleGenerator(new IPDNonRandomPointGenerator(2, 2)));
 	}

@@ -1,6 +1,8 @@
 package org.iMage.geometrify;
 
 @FunctionalInterface
-public interface IPrimitiveGenerator {
+public interface PrimitiveGenerator {
 	Primitive generatePrimitive();
+	
+	
 }

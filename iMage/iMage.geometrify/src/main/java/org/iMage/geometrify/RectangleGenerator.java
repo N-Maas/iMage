@@ -1,6 +1,6 @@
 package org.iMage.geometrify;
 
-public class RectangleGenerator implements IPrimitiveGenerator {
+public class RectangleGenerator implements PrimitiveGenerator {
 	private final RandomPointGenerator generator;
 
 	public RectangleGenerator(int width, int height) {

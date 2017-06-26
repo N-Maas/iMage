@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeListener;
 
-import org.iMage.geometrify.IPrimitiveGenerator;
+import org.iMage.geometrify.PrimitiveGenerator;
 
 import filter.ObservableTPFilter;
 
@@ -54,7 +54,7 @@ public class FrameView {
 	 * @param chooser
 	 *            JFileChooser for saving the results
 	 */
-	public FrameView(String fileName, BufferedImage src, IPrimitiveGenerator generator, int iterations, int samples,
+	public FrameView(String fileName, BufferedImage src, PrimitiveGenerator generator, int iterations, int samples,
 			JFileChooser chooser) {
 		int width = src.getWidth();
 		int height = src.getHeight();

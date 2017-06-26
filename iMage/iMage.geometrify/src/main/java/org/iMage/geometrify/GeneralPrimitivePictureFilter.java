@@ -11,10 +11,10 @@ import java.util.concurrent.Executors;
  *
  * @author Nikolai
  */
-public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
+public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 	private static final int BLUE = 255, GREEN = 255 << 8, RED = 255 << 16, ALPHA = 255 << 24;
 	private static final int X_VAL = BLUE | GREEN, Y_VAL = RED | ALPHA;
-	private final IPrimitiveGenerator generator;
+	private final PrimitiveGenerator generator;
 	private final float opaque;
 
 	/**
@@ -23,7 +23,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	 * @param pointGenerator
 	 *            the pointGenerator
 	 */
-	public GeneralPrimitivePictureFilter(IPrimitiveGenerator generator) {
+	public GeneralPrimitivePictureFilter(PrimitiveGenerator generator) {
 		this(generator, 0.5f);
 	}
 
@@ -33,7 +33,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	 * @param pointGenerator
 	 *            the pointGenerator
 	 */
-	public GeneralPrimitivePictureFilter(IPrimitiveGenerator generator, float opaque) {
+	public GeneralPrimitivePictureFilter(PrimitiveGenerator generator, float opaque) {
 		this.generator = generator;
 		this.opaque = opaque;
 	}

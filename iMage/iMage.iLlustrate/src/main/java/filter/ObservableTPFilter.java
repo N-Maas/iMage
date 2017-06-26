@@ -9,7 +9,7 @@ import java.util.Objects;
 import org.iMage.geometrify.ColoredPrimitive;
 import org.iMage.geometrify.GeneralPrimitivePictureFilter;
 import org.iMage.geometrify.Primitive;
-import org.iMage.geometrify.IPrimitiveGenerator;
+import org.iMage.geometrify.PrimitiveGenerator;
 
 /**
  * Subclass of TrianglePictureFilter that adds observable functionality.
@@ -26,7 +26,7 @@ public class ObservableTPFilter extends GeneralPrimitivePictureFilter implements
 	 * @param pointGenerator
 	 *            the RandomPointGenerator
 	 */
-	public ObservableTPFilter(IPrimitiveGenerator generator) {
+	public ObservableTPFilter(PrimitiveGenerator generator) {
 		super(generator);
 	}
 

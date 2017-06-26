@@ -1,6 +1,6 @@
 package org.iMage.geometrify;
 
-public class TriangleGenerator implements IPrimitiveGenerator {
+public class TriangleGenerator implements PrimitiveGenerator {
 	private final IPointGenerator generator;
 
 	public TriangleGenerator(int width, int height) {
@@ -9,6 +9,6 @@ public class TriangleGenerator implements IPrimitiveGenerator {
 
 	@Override
 	public Primitive generatePrimitive() {
-		return new ITriangle(this.generator.nextPoint(), this.generator.nextPoint(), this.generator.nextPoint());
+		return new Triangle(this.generator.nextPoint(), this.generator.nextPoint(), this.generator.nextPoint());
 	}
 }

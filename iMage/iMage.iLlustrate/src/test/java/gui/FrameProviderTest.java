@@ -8,7 +8,7 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import org.iMage.geometrify.RandomPointGenerator;
+import org.iMage.geometrify.TriangleGenerator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ public class FrameProviderTest {
 	public void basicTest() {
 		int[] counter = { 0 };
 		int width = this.smallImage.getWidth(), height = this.smallImage.getHeight();
-		ObservableTPFilter filter = new ObservableTPFilter(new RandomPointGenerator(width, height));
+		ObservableTPFilter filter = new ObservableTPFilter(new TriangleGenerator(width, height));
 		FrameProvider ip = new FrameProvider(filter, null);
 		ip.addChangeListener(e -> counter[0]++);
 		BufferedImage expected = filter.apply(this.smallImage, 50, 10);

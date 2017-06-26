@@ -26,7 +26,7 @@ public final class GUIApp {
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
 			Illustrate il = new Illustrate((width, height) -> {
-				PolygonGenerator gen = new PolygonGenerator(width, height, 5, 10);
+				PolygonGenerator gen = new PolygonGenerator(width, height);
 				gen.setBounds(PolygonGenerator.RANDOM_BOUNDS);
 				return gen;
 			});

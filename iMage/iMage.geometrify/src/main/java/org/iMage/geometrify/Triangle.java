@@ -8,10 +8,10 @@ import java.util.List;
 /**
  * A triangle.
  *
- * @author Dominic Ziegler, Martin Blersch
+ * @author originally by Dominic Ziegler, Martin Blersch
  * @version 1.0
  */
-public class ITriangle extends AbstractPrimitive {
+public class Triangle extends AbstractPrimitive {
 	// Alternative Implementierung:
 	// private Polygon polygon;
 	protected Point a, b, c;
@@ -26,7 +26,7 @@ public class ITriangle extends AbstractPrimitive {
 	 * @param c
 	 *            the third vertex
 	 */
-	public ITriangle(Point a, Point b, Point c) {
+	public Triangle(Point a, Point b, Point c) {
 		super(calculateBounds(a, b, c));
 		this.a = a;
 		this.b = b;
