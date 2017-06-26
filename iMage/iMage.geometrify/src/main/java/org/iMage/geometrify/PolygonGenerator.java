@@ -7,14 +7,11 @@ import java.util.Random;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class PolygonGenerator implements PrimitiveGenerator {
-	public static final int RANDOM_BOUNDS = -42, NO_BOUNDS = -43;
+public class PolygonGenerator extends AbstractPrimitiveGenerator {
 	private final Random r = new Random();
-	private final int width;
-	private final int height;
+	private final RandomPointGenerator generator;
 	private final int minPoints;
 	private final int maxPoints;
-	private int bounds = NO_BOUNDS;
 
 	public PolygonGenerator(int width, int height) {
 		this(width, height, 3, 3);
@@ -25,53 +22,27 @@ public class PolygonGenerator implements PrimitiveGenerator {
 	}
 
 	public PolygonGenerator(int width, int height, int minPoints, int maxPoints) {
+		this(new RandomPointGenerator(width, height), minPoints, maxPoints);
+	}
+
+	public PolygonGenerator(RandomPointGenerator generator, int minPoints, int maxPoints) {
+		super(generator);
 		if (minPoints < 3 || maxPoints < minPoints) {
 			throw new IllegalArgumentException("Illegal point range.");
 		}
-		this.width = width;
-		this.height = height;
+		this.generator = generator;
 		this.minPoints = minPoints;
 		this.maxPoints = maxPoints;
 	}
 
 	@Override
 	public Primitive generatePrimitive() {
-		RandomPointGenerator generator;
-		if (this.bounds == NO_BOUNDS) {
-			generator = new RandomPointGenerator(this.width, this.height);
-		} else if (this.bounds == RANDOM_BOUNDS) {
-			generator = new RandomPointGenerator(this.width, this.height);
-			Point a = generator.nextPoint();
-			Point b;
-			do {
-				b = generator.nextPoint();
-			} while (Math.abs(a.x - b.x + 1) < 2 || Math.abs(a.y - b.y + 1) < 2);
-			generator = new RandomPointGenerator(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(a.x - b.x + 1),
-					Math.abs(a.y - b.y + 1));
-		} else {
-			generator = new RandomPointGenerator(this.width - this.bounds, this.height - this.bounds);
-			Point a = generator.nextPoint();
-			generator = new RandomPointGenerator(a.x, a.y, this.bounds, this.bounds);
-		}
-
 		int pointCount = this.minPoints + this.r.nextInt(this.maxPoints - this.minPoints + 1);
 		List<Point> points = new ArrayList<>(pointCount);
 		for (int i = 0; i < pointCount; i++) {
-			points.add(generator.nextPoint());
+			points.add(this.generator.nextPoint());
 		}
-		Point[] reorder = this.reorder(points);
-		return new FPolygon(reorder);
-	}
-
-	public int getBounds() {
-		return this.bounds;
-	}
-
-	public void setBounds(int bounds) {
-		if (bounds < 2 && bounds != RANDOM_BOUNDS && bounds != NO_BOUNDS) {
-			throw new IllegalArgumentException("Illegal bounds value.");
-		}
-		this.bounds = bounds;
+		return new FPolygon(this.reorder(points));
 	}
 
 	private Point[] reorder(List<Point> points) {
@@ -112,5 +83,10 @@ public class PolygonGenerator implements PrimitiveGenerator {
 			s1.addAll(s2);
 			return s1;
 		}).get().toArray(new Point[0]);
+	}
+
+	@Override
+	protected PrimitiveGenerator createBy(RandomPointGenerator generator) {
+		return new PolygonGenerator(generator, this.minPoints, this.maxPoints);
 	}
 }

@@ -1,8 +1,13 @@
 package org.iMage.geometrify;
 
-@FunctionalInterface
 public interface PrimitiveGenerator {
 	Primitive generatePrimitive();
-	
-	
+
+	int getWidth();
+
+	int getHeight();
+
+	int getMinX();
+
+	int getMinY();
 }

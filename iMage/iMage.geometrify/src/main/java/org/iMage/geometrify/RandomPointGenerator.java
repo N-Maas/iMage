@@ -32,4 +32,20 @@ public class RandomPointGenerator implements IPointGenerator {
 	public Point nextPoint() {
 		return new Point(this.minX + this.r.nextInt(this.width), this.minY + this.r.nextInt(this.height));
 	}
+
+	public int getWidth() {
+		return this.width;
+	}
+
+	public int getHeight() {
+		return this.height;
+	}
+
+	public int getMinX() {
+		return this.minX;
+	}
+
+	public int getMinY() {
+		return this.minY;
+	}
 }
