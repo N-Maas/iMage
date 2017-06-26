@@ -149,7 +149,7 @@ public class FrameProvider extends StateChanger implements FilterObserver {
 				return;
 			}
 			ColoredPrimitive primitive = this.primitives.get(counter);
-			this.filter.addToImage(result, primitive, primitive.getColor());
+			this.filter.addToImage(result, primitive);
 			counter++;
 		}
 		this.updateFrame(result, newIndex);

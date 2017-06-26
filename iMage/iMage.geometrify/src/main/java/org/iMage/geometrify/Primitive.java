@@ -1,5 +1,7 @@
 package org.iMage.geometrify;
 
+import java.awt.Color;
+
 public interface Primitive {
 	int[] getInsidePoints();
 
@@ -14,4 +16,12 @@ public interface Primitive {
 	int getWidth();
 
 	int getHeight();
+
+	default ColoredPrimitive colored(Color c) {
+		return new ColoredPrimitive(this, c);
+	}
+
+	default ColoredPrimitive colored(int i) {
+		return new ColoredPrimitive(this, i);
+	}
 }

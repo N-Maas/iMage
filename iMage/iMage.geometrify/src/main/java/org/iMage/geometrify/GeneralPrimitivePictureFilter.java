@@ -1,6 +1,5 @@
 package org.iMage.geometrify;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -92,7 +91,8 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 					try {
 						prims[puffer] = this.generator.generatePrimitive();
 						colors[puffer] = GeneralPrimitivePictureFilter.calculateColor(orgSample, prims[puffer]);
-						diffs[puffer] = this.calculateDifference(orgSample, newSample, colors[puffer], prims[puffer]);
+						diffs[puffer] = this.calculateDifference(orgSample, newSample,
+								prims[puffer].colored(colors[puffer]));
 						latch.countDown();
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -114,20 +114,21 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 				}
 			}
 
-			this.addToImage(newSample, colors[minIndex], prims[minIndex]);
-			this.processIteration(newSample, prims[minIndex], new Color(colors[minIndex], hasAlpha));
+			ColoredPrimitive prim = prims[minIndex].colored(colors[minIndex]);
+			this.addToImage(newSample, prim);
+			this.processIteration(newSample, prim);
 		}
 		return GeneralPrimitivePictureFilter.toImage(newSample, image);
 	}
 
-	public void addToImage(BufferedImage current, Primitive primitive, Color c) {
+	public void addToImage(BufferedImage current, ColoredPrimitive primitive) {
 		int[] insidePoints = primitive.getInsidePoints();
 		int[][] orgSample = new int[current.getWidth()][current.getHeight()];
 		for (int i = 0; i < insidePoints.length; i += 2) {
 			int x = insidePoints[i], y = insidePoints[i + 1];
 			orgSample[x][y] = current.getRGB(x, y);
 		}
-		this.addToImage(orgSample, c.getRGB(), primitive);
+		this.addToImage(orgSample, primitive);
 		for (int i = 0; i < insidePoints.length; i += 2) {
 			int x = insidePoints[i], y = insidePoints[i + 1];
 			current.setRGB(x, y, orgSample[x][y]);
@@ -135,7 +136,7 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 
 	}
 
-	protected void processIteration(int[][] newData, Primitive primitive, Color c) {
+	protected void processIteration(int[][] newData, ColoredPrimitive primitive) {
 	}
 
 	/*
@@ -167,24 +168,26 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 	// return difference;
 	// }
 
-	public int calculateDifference(int[][] orgData, int[][] newData, int color, Primitive primitive) {
+	public int calculateDifference(int[][] orgData, int[][] newData, ColoredPrimitive primitive) {
 		int[] insidePoints = primitive.getInsidePoints();
+		int rgb = primitive.getColor().getRGB();
 		int difference = 0;
 		for (int i = 0; i < insidePoints.length; i += 2) {
 			int x = insidePoints[i], y = insidePoints[i + 1];
 			int orgColor = orgData[x][y];
 			int oldColor = newData[x][y];
-			int newColor = colorAverage(oldColor, color, this.opaque);
+			int newColor = colorAverage(oldColor, rgb, this.opaque);
 			difference += colorDifference(orgColor, newColor) - colorDifference(orgColor, oldColor);
 		}
 		return difference;
 	}
 
-	private void addToImage(int[][] data, int color, Primitive primitive) {
+	private void addToImage(int[][] data, ColoredPrimitive primitive) {
 		int[] insidePoints = primitive.getInsidePoints();
+		int rgb = primitive.getColor().getRGB();
 		for (int i = 0; i < insidePoints.length; i += 2) {
 			int x = insidePoints[i], y = insidePoints[i + 1];
-			data[x][y] = colorAverage(data[x][y], color, this.opaque);
+			data[x][y] = colorAverage(data[x][y], rgb, this.opaque);
 		}
 	}
 

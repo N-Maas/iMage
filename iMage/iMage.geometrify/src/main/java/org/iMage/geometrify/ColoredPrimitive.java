@@ -6,6 +6,10 @@ public class ColoredPrimitive implements ColorPrimitive {
 	private final Primitive primitive;
 	private final Color color;
 
+	public ColoredPrimitive(Primitive primitive, int rgb) {
+		this(primitive, new Color(rgb, true));
+	}
+
 	public ColoredPrimitive(Primitive primitive, Color color) {
 		this.primitive = primitive;
 		this.color = color;
