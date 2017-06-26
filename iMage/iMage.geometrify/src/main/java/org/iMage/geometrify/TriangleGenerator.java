@@ -8,7 +8,7 @@ public class TriangleGenerator implements IPrimitiveGenerator {
 	}
 
 	@Override
-	public IPrimitive generatePrimitive() {
+	public Primitive generatePrimitive() {
 		return new ITriangle(this.generator.nextPoint(), this.generator.nextPoint(), this.generator.nextPoint());
 	}
 }

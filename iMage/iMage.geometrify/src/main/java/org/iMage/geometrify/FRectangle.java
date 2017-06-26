@@ -8,8 +8,7 @@ import java.awt.Point;
  * @author Nikolai Maas
  * @version 1.0
  */
-public class IRectangle extends AbstractPrimitive {
-	private final int xMin, xMax, yMin, yMax;
+public class FRectangle extends AbstractPrimitive {
 
 	/**
 	 * Creates a new triangle from the given vertices. Negative coordinates or
@@ -22,22 +21,20 @@ public class IRectangle extends AbstractPrimitive {
 	 * @param c
 	 *            the third vertex
 	 */
-	public IRectangle(Point a, Point b) {
-		this.xMin = Math.min(a.x, b.x);
-		this.xMax = Math.max(a.x, b.x);
-		this.yMin = Math.min(a.y, b.y);
-		this.yMax = Math.max(a.y, b.y);
+	public FRectangle(Point a, Point b) {
+		super(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.max(a.x, b.x) - Math.min(a.x, b.x) + 1,
+				Math.max(a.y, b.y) - Math.min(a.y, b.y) + 1);
 	}
 
 	@Override
 	protected int[] calculatePoints() {
-		int width = this.xMax - this.xMin + 1;
-		int[] result = new int[2 * width * (this.yMax - this.yMin + 1)];
-		for (int i = this.xMin; i <= this.xMax; i++) {
-			for (int j = this.yMin; j <= this.yMax; j++) {
-				int index = (i - this.xMin) + (j - this.yMin) * width;
+		int[] result = new int[2 * this.getWidth() * this.getHeight()];
+		int index = 0;
+		for (int i = this.getMinX(); i < this.getMinX() + this.getWidth(); i++) {
+			for (int j = this.getMinY(); j < this.getMinY() + this.getHeight(); j++) {
 				result[index] = i;
 				result[index + 1] = j;
+				index += 2;
 			}
 		}
 		return result;

@@ -2,7 +2,7 @@ package gui;
 
 import javax.swing.SwingUtilities;
 
-import org.iMage.geometrify.TriangleGenerator;
+import org.iMage.geometrify.PolygonGenerator;
 
 /**
  * Main class for initialization of iLlustrate.
@@ -25,7 +25,11 @@ public final class GUIApp {
 	 */
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
-			Illustrate il = new Illustrate((width, height) -> new TriangleGenerator(width, height));
+			Illustrate il = new Illustrate((width, height) -> {
+				PolygonGenerator gen = new PolygonGenerator(width, height, 5, 10);
+				gen.setBounds(PolygonGenerator.RANDOM_BOUNDS);
+				return gen;
+			});
 			il.getFrame().setLocationRelativeTo(null);
 			il.getFrame().setVisible(true);
 		});

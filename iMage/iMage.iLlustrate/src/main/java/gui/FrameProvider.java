@@ -9,7 +9,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 
 import org.iMage.geometrify.ColoredPrimitive;
-import org.iMage.geometrify.IPrimitive;
+import org.iMage.geometrify.Primitive;
 
 import filter.FilterObserver;
 import filter.ObservableTPFilter;
@@ -106,7 +106,7 @@ public class FrameProvider extends StateChanger implements FilterObserver {
 	 *            index of the primitive
 	 * @return the primitive
 	 */
-	public IPrimitive getPrimitive(int index) {
+	public Primitive getPrimitive(int index) {
 		if (index < 0 || index >= this.primitives.size()) {
 			throw new IndexOutOfBoundsException("No primitive at this index available.");
 		}

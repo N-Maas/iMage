@@ -3,11 +3,13 @@ package org.iMage.geometrify;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class PolygonGenerator implements IPrimitiveGenerator {
 	public static final int RANDOM_BOUNDS = -42, NO_BOUNDS = -43;
+	private final Random r = new Random();
 	private final int width;
 	private final int height;
 	private final int minPoints;
@@ -33,7 +35,7 @@ public class PolygonGenerator implements IPrimitiveGenerator {
 	}
 
 	@Override
-	public IPrimitive generatePrimitive() {
+	public Primitive generatePrimitive() {
 		RandomPointGenerator generator;
 		if (this.bounds == NO_BOUNDS) {
 			generator = new RandomPointGenerator(this.width, this.height);
@@ -43,21 +45,22 @@ public class PolygonGenerator implements IPrimitiveGenerator {
 			Point b;
 			do {
 				b = generator.nextPoint();
-			} while (Math.abs(a.x - b.x) < 2 || Math.abs(a.y - b.y) < 2);
-			generator = new RandomPointGenerator(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(a.x - b.x),
-					Math.abs(a.y - b.y));
+			} while (Math.abs(a.x - b.x + 1) < 2 || Math.abs(a.y - b.y + 1) < 2);
+			generator = new RandomPointGenerator(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(a.x - b.x + 1),
+					Math.abs(a.y - b.y + 1));
 		} else {
 			generator = new RandomPointGenerator(this.width - this.bounds, this.height - this.bounds);
 			Point a = generator.nextPoint();
 			generator = new RandomPointGenerator(a.x, a.y, this.bounds, this.bounds);
 		}
 
-		int pointCount = this.minPoints + (int) ((this.maxPoints - this.minPoints + 1) * Math.random());
+		int pointCount = this.minPoints + this.r.nextInt(this.maxPoints - this.minPoints + 1);
 		List<Point> points = new ArrayList<>(pointCount);
 		for (int i = 0; i < pointCount; i++) {
 			points.add(generator.nextPoint());
 		}
-		return new IPolygon(this.reorder(points));
+		Point[] reorder = this.reorder(points);
+		return new FPolygon(reorder);
 	}
 
 	public int getBounds() {

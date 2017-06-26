@@ -38,7 +38,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		this.opaque = opaque;
 	}
 
-	public static int calculateColor(int[][] data, IPrimitive primitive) {
+	public static int calculateColor(int[][] data, Primitive primitive) {
 		int[] insidePoints = primitive.getInsidePoints();
 		long blue = 0;
 		long green = 0;
@@ -74,7 +74,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 
 		// reuseable resources
 		ExecutorService executor = Executors.newFixedThreadPool(numberOfSamples);
-		IPrimitive[] prims = new IPrimitive[numberOfSamples];
+		Primitive[] prims = new Primitive[numberOfSamples];
 		int[] colors = new int[numberOfSamples];
 		int[] diffs = new int[numberOfSamples];
 		int[][] orgSample = GeneralPrimitivePictureFilter.toData(image);
@@ -102,8 +102,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 			try {
 				latch.await();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Synchronisation failure in calculation.");
+				return GeneralPrimitivePictureFilter.toImage(newSample, image);
 			}
 
 			int min = Integer.MAX_VALUE;
@@ -121,7 +120,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		return GeneralPrimitivePictureFilter.toImage(newSample, image);
 	}
 
-	public void addToImage(BufferedImage current, IPrimitive primitive, Color c) {
+	public void addToImage(BufferedImage current, Primitive primitive, Color c) {
 		int[] insidePoints = primitive.getInsidePoints();
 		int[][] orgSample = new int[current.getWidth()][current.getHeight()];
 		for (int i = 0; i < insidePoints.length; i += 2) {
@@ -136,7 +135,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 
 	}
 
-	protected void processIteration(int[][] newData, IPrimitive primitive, Color c) {
+	protected void processIteration(int[][] newData, Primitive primitive, Color c) {
 	}
 
 	/*
@@ -168,7 +167,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 	// return difference;
 	// }
 
-	public int calculateDifference(int[][] orgData, int[][] newData, int color, IPrimitive primitive) {
+	public int calculateDifference(int[][] orgData, int[][] newData, int color, Primitive primitive) {
 		int[] insidePoints = primitive.getInsidePoints();
 		int difference = 0;
 		for (int i = 0; i < insidePoints.length; i += 2) {
@@ -181,7 +180,7 @@ public class GeneralPrimitivePictureFilter implements IPrimitivePictureFilter {
 		return difference;
 	}
 
-	private void addToImage(int[][] data, int color, IPrimitive primitive) {
+	private void addToImage(int[][] data, int color, Primitive primitive) {
 		int[] insidePoints = primitive.getInsidePoints();
 		for (int i = 0; i < insidePoints.length; i += 2) {
 			int x = insidePoints[i], y = insidePoints[i + 1];

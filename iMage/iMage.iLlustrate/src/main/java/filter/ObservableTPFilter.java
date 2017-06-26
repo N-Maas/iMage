@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import org.iMage.geometrify.ColoredPrimitive;
 import org.iMage.geometrify.GeneralPrimitivePictureFilter;
-import org.iMage.geometrify.IPrimitive;
+import org.iMage.geometrify.Primitive;
 import org.iMage.geometrify.IPrimitiveGenerator;
 
 /**
@@ -47,7 +47,7 @@ public class ObservableTPFilter extends GeneralPrimitivePictureFilter implements
 	}
 
 	@Override
-	protected void processIteration(int[][] newData, IPrimitive primitive, Color c) {
+	protected void processIteration(int[][] newData, Primitive primitive, Color c) {
 		this.addToImage(this.currentImage, primitive, c);
 		this.notifyObservers(this.currentImage, new ColoredPrimitive(primitive, c));
 	}

@@ -1,6 +1,7 @@
 package org.iMage.geometrify;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +27,18 @@ public class ITriangle extends AbstractPrimitive {
 	 *            the third vertex
 	 */
 	public ITriangle(Point a, Point b, Point c) {
+		super(calculateBounds(a, b, c));
 		this.a = a;
 		this.b = b;
 		this.c = c;
+	}
+
+	private static Rectangle calculateBounds(Point a, Point b, Point c) {
+		int minX = Math.min(Math.min(a.x, b.x), c.x);
+		int maxX = Math.max(Math.max(a.x, b.x), c.x);
+		int minY = Math.min(Math.min(a.y, b.y), c.y);
+		int maxY = Math.max(Math.max(a.y, b.y), c.y);
+		return new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
 	}
 
 	private static long crossProduct(int x, int y, Point trianglePointA, Point trianglePointB) {
@@ -39,30 +49,26 @@ public class ITriangle extends AbstractPrimitive {
 		return ax * by - ay * bx;
 	}
 
-	public boolean isInsidePrimitive(int x, int y) {
-		boolean b1, b2, b3;
-
-		b1 = crossProduct(x, y, this.a, this.b) > 0;
-		b2 = crossProduct(x, y, this.b, this.c) > 0;
-		b3 = crossProduct(x, y, this.c, this.a) > 0;
-		return (b1 == b2) && (b2 == b3);
-	}
-
 	@Override
 	protected int[] calculatePoints() {
-		int minX = Math.min(Math.min(this.a.x, this.b.x), this.c.x);
-		int minY = Math.min(Math.min(this.a.y, this.b.y), this.c.y);
-		int maxX = Math.max(Math.max(this.a.x, this.b.x), this.c.x);
-		int maxY = Math.max(Math.max(this.a.y, this.b.y), this.c.y);
 		List<Integer> pointList = new ArrayList<>();
-		for (int i = minX; i <= maxX; i++) {
-			for (int j = minY; j <= maxY; j++) {
-				if (this.isInsidePrimitive(i, j)) {
+		for (int i = this.getMinX(); i < this.getMinX() + this.getWidth(); i++) {
+			for (int j = this.getMinY(); j < this.getMinY() + this.getHeight(); j++) {
+				if (this.calculateInsidePrimitive(i, j)) {
 					pointList.add(i);
 					pointList.add(j);
 				}
 			}
 		}
 		return pointList.stream().mapToInt(i -> i).toArray();
+	}
+
+	private boolean calculateInsidePrimitive(int x, int y) {
+		boolean b1, b2, b3;
+
+		b1 = crossProduct(x, y, this.a, this.b) > 0;
+		b2 = crossProduct(x, y, this.b, this.c) > 0;
+		b3 = crossProduct(x, y, this.c, this.a) > 0;
+		return (b1 == b2) && (b2 == b3);
 	}
 }

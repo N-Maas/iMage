@@ -8,7 +8,7 @@ public class RectangleGenerator implements IPrimitiveGenerator {
 	}
 
 	@Override
-	public IPrimitive generatePrimitive() {
-		return new IRectangle(this.generator.nextPoint(), this.generator.nextPoint());
+	public Primitive generatePrimitive() {
+		return new FRectangle(this.generator.nextPoint(), this.generator.nextPoint());
 	}
 }
