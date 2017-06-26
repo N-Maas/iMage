@@ -2,8 +2,6 @@ package org.iMage.geometrify;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A triangle.
@@ -51,16 +49,7 @@ public class Triangle extends AbstractPrimitive {
 
 	@Override
 	protected int[] calculatePoints() {
-		List<Integer> pointList = new ArrayList<>();
-		for (int i = this.getMinX(); i < this.getMinX() + this.getWidth(); i++) {
-			for (int j = this.getMinY(); j < this.getMinY() + this.getHeight(); j++) {
-				if (this.calculateInsidePrimitive(i, j)) {
-					pointList.add(i);
-					pointList.add(j);
-				}
-			}
-		}
-		return pointList.stream().mapToInt(i -> i).toArray();
+		return super.buildPoints(this::calculateInsidePrimitive);
 	}
 
 	private boolean calculateInsidePrimitive(int x, int y) {

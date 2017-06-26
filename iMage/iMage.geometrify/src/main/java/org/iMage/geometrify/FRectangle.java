@@ -28,15 +28,6 @@ public class FRectangle extends AbstractPrimitive {
 
 	@Override
 	protected int[] calculatePoints() {
-		int[] result = new int[2 * this.getWidth() * this.getHeight()];
-		int index = 0;
-		for (int i = this.getMinX(); i < this.getMinX() + this.getWidth(); i++) {
-			for (int j = this.getMinY(); j < this.getMinY() + this.getHeight(); j++) {
-				result[index] = i;
-				result[index + 1] = j;
-				index += 2;
-			}
-		}
-		return result;
+		return super.buildPoints((x, y) -> true);
 	}
 }

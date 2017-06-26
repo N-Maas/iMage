@@ -1,7 +1,9 @@
 package org.iMage.geometrify;
 
 import java.awt.Rectangle;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.function.BiPredicate;
 
 public abstract class AbstractPrimitive implements Primitive {
 	private final int minX;
@@ -28,6 +30,36 @@ public abstract class AbstractPrimitive implements Primitive {
 
 	public AbstractPrimitive(Rectangle r) {
 		this(r.x, r.y, (int) r.getWidth(), (int) r.getHeight());
+	}
+
+	protected int[] buildPoints(BiPredicate<Integer, Integer> predicate) {
+		int[] result = new int[2 * this.getWidth() * this.getHeight()];
+		int index = 0;
+		for (int y = this.getMinY(); y < this.getMinY() + this.getHeight(); y++) {
+			for (int x = this.getMinX(); x < this.getMinX() + this.getWidth(); x++) {
+				if (predicate.test(x, y)) {
+					result[index] = x;
+					result[index + 1] = y;
+					index += 2;
+				}
+			}
+		}
+		return index < result.length ? Arrays.copyOf(result, index) : result;
+	}
+
+	protected int[] buildPointsByOrigin(BiPredicate<Integer, Integer> predicate) {
+		int[] result = new int[2 * this.getWidth() * this.getHeight()];
+		int index = 0;
+		for (int y = 0; y < this.getHeight(); y++) {
+			for (int x = 0; x < this.getWidth(); x++) {
+				if (predicate.test(x, y)) {
+					result[index] = x + this.getMinX();
+					result[index + 1] = y + this.getMinY();
+					index += 2;
+				}
+			}
+		}
+		return index < result.length ? Arrays.copyOf(result, index) : result;
 	}
 
 	/**
