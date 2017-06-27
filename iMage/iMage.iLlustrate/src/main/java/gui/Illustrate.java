@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.iMage.geometrify.PrimitiveGenerator;
+import org.iMage.geometrify.generators.PrimitiveGenerator;
 
 import filter.ObservableTPFilter;
 

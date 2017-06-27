@@ -2,7 +2,7 @@ package filter;
 
 import java.awt.image.BufferedImage;
 
-import org.iMage.geometrify.ColoredPrimitive;
+import org.iMage.geometrify.primitives.ColoredPrimitive;
 
 /**
  * An observer that observes Filters and receives primitives and new image

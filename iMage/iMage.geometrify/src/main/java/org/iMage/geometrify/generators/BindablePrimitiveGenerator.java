@@ -1,4 +1,4 @@
-package org.iMage.geometrify;
+package org.iMage.geometrify.generators;
 
 public interface BindablePrimitiveGenerator extends PrimitiveGenerator {
 

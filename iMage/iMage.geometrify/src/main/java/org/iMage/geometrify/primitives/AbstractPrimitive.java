@@ -1,4 +1,4 @@
-package org.iMage.geometrify;
+package org.iMage.geometrify.primitives;
 
 import java.awt.Rectangle;
 import java.util.Arrays;

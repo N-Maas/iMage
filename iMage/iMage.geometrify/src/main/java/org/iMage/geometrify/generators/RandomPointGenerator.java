@@ -1,7 +1,9 @@
-package org.iMage.geometrify;
+package org.iMage.geometrify.generators;
 
 import java.awt.Point;
 import java.util.Random;
+
+import org.iMage.geometrify.IPointGenerator;
 
 public class RandomPointGenerator implements IPointGenerator {
 	private final Random r = new Random();

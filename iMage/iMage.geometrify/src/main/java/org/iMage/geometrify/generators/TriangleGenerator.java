@@ -1,4 +1,7 @@
-package org.iMage.geometrify;
+package org.iMage.geometrify.generators;
+
+import org.iMage.geometrify.primitives.Primitive;
+import org.iMage.geometrify.primitives.Triangle;
 
 public class TriangleGenerator extends AbstractPrimitiveGenerator {
 

@@ -1,4 +1,4 @@
-package org.iMage.geometrify;
+package org.iMage.geometrify.generators;
 
 import java.awt.Point;
 import java.util.Random;

@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeListener;
 
-import org.iMage.geometrify.PrimitiveGenerator;
+import org.iMage.geometrify.generators.PrimitiveGenerator;
 
 import filter.ObservableTPFilter;
 

@@ -8,8 +8,8 @@ import java.util.Objects;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 
-import org.iMage.geometrify.ColoredPrimitive;
-import org.iMage.geometrify.Primitive;
+import org.iMage.geometrify.primitives.ColoredPrimitive;
+import org.iMage.geometrify.primitives.Primitive;
 
 import filter.FilterObserver;
 import filter.ObservableTPFilter;

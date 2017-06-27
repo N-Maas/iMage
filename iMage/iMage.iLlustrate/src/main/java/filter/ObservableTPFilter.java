@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.iMage.geometrify.ColoredPrimitive;
 import org.iMage.geometrify.GeneralPrimitivePictureFilter;
-import org.iMage.geometrify.PrimitiveGenerator;
+import org.iMage.geometrify.generators.PrimitiveGenerator;
+import org.iMage.geometrify.primitives.ColoredPrimitive;
 
 /**
  * Subclass of TrianglePictureFilter that adds observable functionality.

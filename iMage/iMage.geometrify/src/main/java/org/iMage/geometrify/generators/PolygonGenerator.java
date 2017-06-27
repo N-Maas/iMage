@@ -1,4 +1,4 @@
-package org.iMage.geometrify;
+package org.iMage.geometrify.generators;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -7,9 +7,11 @@ import java.util.Random;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.iMage.geometrify.primitives.FPolygon;
+import org.iMage.geometrify.primitives.Primitive;
+
 public class PolygonGenerator extends AbstractPrimitiveGenerator {
 	private final Random r = new Random();
-	private final RandomPointGenerator generator;
 	private final int minPoints;
 	private final int maxPoints;
 
@@ -30,7 +32,6 @@ public class PolygonGenerator extends AbstractPrimitiveGenerator {
 		if (minPoints < 3 || maxPoints < minPoints) {
 			throw new IllegalArgumentException("Illegal point range.");
 		}
-		this.generator = generator;
 		this.minPoints = minPoints;
 		this.maxPoints = maxPoints;
 	}

@@ -1,4 +1,4 @@
-package org.iMage.geometrify;
+package org.iMage.geometrify.primitives;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -66,7 +66,7 @@ public class FPolygon extends AbstractPrimitive {
 
 			flags[upX][minY]++;
 			for (int i = 1; i < height; i++) {
-				flags[upX + dX * i / height][minY + i]++;
+				flags[upX + (int) Math.round((double) (dX * i) / height)][minY + i]++;
 			}
 			last = p;
 		}

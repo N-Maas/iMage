@@ -1,6 +1,8 @@
-package org.iMage.geometrify;
+package org.iMage.geometrify.generators;
 
 import java.util.function.Function;
+
+import org.iMage.geometrify.primitives.Primitive;
 
 public class BoundedPrimitiveGenerator implements BindablePrimitiveGenerator {
 	private final Function<RandomPointGenerator, PrimitiveGenerator> genFactory;

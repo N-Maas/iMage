@@ -5,6 +5,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.iMage.geometrify.generators.PrimitiveGenerator;
+import org.iMage.geometrify.primitives.ColoredPrimitive;
+import org.iMage.geometrify.primitives.Primitive;
+
 /**
  * Modifies an image by iteratively reconstructing it with triangles.
  *

@@ -1,4 +1,6 @@
-package org.iMage.geometrify;
+package org.iMage.geometrify.generators;
+
+import java.awt.Point;
 
 public abstract class AbstractPrimitiveGenerator implements BindablePrimitiveGenerator {
 	protected final RandomPointGenerator generator;
