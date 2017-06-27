@@ -39,4 +39,10 @@ public abstract class AbstractPrimitiveGenerator implements BindablePrimitiveGen
 	public int getMinY() {
 		return this.generator.getMinY();
 	}
+
+	protected int calculateWidth(Point a, Point b) {
+		int width = Math.abs(a.x - b.x) + 1;
+		int border = Math.abs(Math.min(a.y, b.y) - this.getMinY() - this.getHeight());
+		return Math.min(width, border);
+	}
 }

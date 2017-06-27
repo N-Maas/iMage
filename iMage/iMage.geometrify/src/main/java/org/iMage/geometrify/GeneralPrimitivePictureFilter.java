@@ -37,6 +37,9 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 	 *            the pointGenerator
 	 */
 	public GeneralPrimitivePictureFilter(PrimitiveGenerator generator, float opaque) {
+		if (opaque <= 0 || opaque > 1) {
+			throw new IllegalArgumentException("Opaque out of bounds: (0, 1]");
+		}
 		this.generator = generator;
 		this.opaque = opaque;
 	}
