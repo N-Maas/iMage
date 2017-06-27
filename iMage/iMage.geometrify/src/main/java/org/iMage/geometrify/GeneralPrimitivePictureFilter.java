@@ -92,7 +92,7 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 						prims[puffer] = this.generator.generatePrimitive();
 						colors[puffer] = GeneralPrimitivePictureFilter.calculateColor(orgSample, prims[puffer]);
 						diffs[puffer] = this.calculateDifference(orgSample, newSample,
-								prims[puffer].colored(colors[puffer]));
+								prims[puffer].ofColor(colors[puffer]));
 						latch.countDown();
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -114,7 +114,7 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 				}
 			}
 
-			ColoredPrimitive prim = prims[minIndex].colored(colors[minIndex]);
+			ColoredPrimitive prim = prims[minIndex].ofColor(colors[minIndex]);
 			this.addToImage(newSample, prim);
 			this.processIteration(newSample, prim);
 		}

@@ -2,7 +2,7 @@ package org.iMage.geometrify;
 
 import java.util.function.Function;
 
-public class BoundedPrimitiveGenerator implements PrimitiveGenerator {
+public class BoundedPrimitiveGenerator implements BindablePrimitiveGenerator {
 	private final Function<RandomPointGenerator, PrimitiveGenerator> genFactory;
 	private final int x;
 	private final int y;
@@ -37,6 +37,9 @@ public class BoundedPrimitiveGenerator implements PrimitiveGenerator {
 
 	@Override
 	public Primitive generatePrimitive() {
+		if (this.width == 0 || this.height == 0) {
+			return Primitive.emptyPrimitive(this.getMinX(), this.getMinY());
+		}
 		return this.genFactory.apply(this.bounds.bind(this.x, this.y, this.width, this.height)).generatePrimitive();
 	}
 
@@ -66,6 +69,16 @@ public class BoundedPrimitiveGenerator implements PrimitiveGenerator {
 	@Override
 	public int getMinY() {
 		return this.y;
+	}
+
+	@Override
+	public BoundedPrimitiveGenerator bindToArea(int x, int y, int width, int height) {
+		return new BoundedPrimitiveGenerator(this.genFactory, x, y, width, height, this.bounds);
+	}
+
+	@Override
+	public BoundedPrimitiveGenerator bindToArea(int x, int y, int width, int height, Bounds bounds) {
+		return new BoundedPrimitiveGenerator(this.genFactory, x, y, width, height, bounds);
 	}
 
 }

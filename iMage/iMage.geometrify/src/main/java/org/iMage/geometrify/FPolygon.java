@@ -16,17 +16,6 @@ public class FPolygon extends AbstractPrimitive {
 	private final List<Point> points;
 	private List<Point> insidePoints;
 
-	/**
-	 * Creates a new triangle from the given vertices. Negative coordinates or
-	 * equal points are accepted, as they are not problematically.
-	 *
-	 * @param a
-	 *            the first vertex
-	 * @param b
-	 *            the second vertex
-	 * @param c
-	 *            the third vertex
-	 */
 	public FPolygon(Point... points) {
 		super(calculateBounds(points));
 		this.points = new ArrayList<>();

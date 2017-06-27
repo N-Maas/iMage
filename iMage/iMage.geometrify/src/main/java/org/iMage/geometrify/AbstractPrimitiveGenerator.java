@@ -1,24 +1,16 @@
 package org.iMage.geometrify;
 
-public abstract class AbstractPrimitiveGenerator implements PrimitiveGenerator {
+public abstract class AbstractPrimitiveGenerator implements BindablePrimitiveGenerator {
 	protected final RandomPointGenerator generator;
 
 	public AbstractPrimitiveGenerator(RandomPointGenerator generator) {
 		this.generator = generator;
 	}
 
-	public BoundedPrimitiveGenerator bind(Bounds bounds) {
-		return this.bindToArea(this.getMinX(), this.getMinY(), this.getWidth(), this.getHeight(), bounds);
-	}
-
-	public BoundedPrimitiveGenerator bindToArea(int x, int y, int width, int height) {
-		return this.bindToArea(x, y, width, height, Bounds.NO_BOUNDS);
-
-	}
-
+	@Override
 	public BoundedPrimitiveGenerator bindToArea(int x, int y, int width, int height, Bounds bounds) {
-		int genX = Math.min(this.getMinX() + this.getWidth() - 2, x);
-		int genY = Math.min(this.getMinY() + this.getHeight() - 2, y);
+		int genX = Math.min(this.getMinX() + this.getWidth(), x);
+		int genY = Math.min(this.getMinY() + this.getHeight(), y);
 		int genWidth = Math.min(this.getMinX() + this.getWidth() - genX, width);
 		int genHeight = Math.min(this.getMinY() + this.getHeight() - genY, height);
 		return new BoundedPrimitiveGenerator(this::createBy, genX, genY, genWidth, genHeight, bounds);
