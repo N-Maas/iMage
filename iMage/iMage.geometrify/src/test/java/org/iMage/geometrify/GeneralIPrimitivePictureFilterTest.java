@@ -11,6 +11,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.iMage.geometrify.generators.PolygonGenerator;
+import org.iMage.geometrify.generators.PrimitiveGenerator;
+import org.iMage.geometrify.generators.RectangleGenerator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -145,6 +148,7 @@ public class GeneralIPrimitivePictureFilterTest {
 	 * picture, saves the result and tests the size and alpha.
 	 */
 	@Test
+	@Ignore
 	public void applyNoAlphaTest() {
 		PrimitiveGenerator gen = new RectangleGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight());
 		// gen.setBounds(PolygonGenerator.RANDOM_BOUNDS);
@@ -167,19 +171,15 @@ public class GeneralIPrimitivePictureFilterTest {
 	 */
 	@Test
 	public void applyAlphaTest() {
-		PrimitiveGenerator gen = new RectangleGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight());
+		long start = System.currentTimeMillis();
+		PrimitiveGenerator gen = new PolygonGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight());
 		// gen.setBounds(PolygonGenerator.RANDOM_BOUNDS);
-		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(gen, 0.45f);
-		BufferedImage image = filter.apply(this.imageAlpha, 800, 50);
+		GeneralPrimitivePictureFilter filter = new GeneralPrimitivePictureFilter(gen);
+		BufferedImage image = filter.apply(this.imageAlpha, 1000, 50);
+		System.out.println("BENCHMARK:" + (System.currentTimeMillis() - start));
 		assertEquals(this.imageAlpha.getWidth(), image.getWidth());
 		assertEquals(this.imageAlpha.getHeight(), image.getHeight());
-		try {
-			assertTrue(image.getColorModel().hasAlpha());
-			ImageIO.write(image, "png", GENERATE_ALPHA);
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail("Unexpected IOException.");
-		}
+		assertTrue(image.getColorModel().hasAlpha());
 	}
 
 	/**

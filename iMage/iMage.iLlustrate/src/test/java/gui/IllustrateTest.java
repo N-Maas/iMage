@@ -11,7 +11,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
-import org.iMage.geometrify.TriangleGenerator;
+import org.iMage.geometrify.generators.TriangleGenerator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;;

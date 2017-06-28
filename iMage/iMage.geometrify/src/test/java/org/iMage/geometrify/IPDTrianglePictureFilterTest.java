@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.iMage.geometrify.primitives.Triangle;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -121,8 +122,8 @@ public class IPDTrianglePictureFilterTest {
 		BufferedImage original = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
 		BufferedImage current = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
 		current.setRGB(0, 0, 0x555555);
-		assertEquals(1272, this.filter.calculateDifference(toData(original), toData(current), Color.WHITE.getRGB(),
-				this.triangleUpperLeft));
+		assertEquals(1272, this.filter.calculateDifference(toData(original), toData(current),
+				this.triangleUpperLeft.ofColor(Color.WHITE)));
 	}
 
 	/**
@@ -146,8 +147,8 @@ public class IPDTrianglePictureFilterTest {
 		current.setRGB(0, 1, 0x7F7F7F);
 		current.setRGB(1, 0, 0x7F7F7F);
 
-		assertEquals(1152, this.filter.calculateDifference(toData(original), toData(current), Color.WHITE.getRGB(),
-				this.triangleUpperLeft));
+		assertEquals(1152, this.filter.calculateDifference(toData(original), toData(current),
+				this.triangleUpperLeft.ofColor(Color.WHITE)));
 	}
 
 	/**
@@ -161,8 +162,8 @@ public class IPDTrianglePictureFilterTest {
 		BufferedImage original = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
 		BufferedImage current = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
 		current.setRGB(0, 0, 0x55555555);
-		assertEquals(1696, this.filter.calculateDifference(toData(original), toData(current), Color.WHITE.getRGB(),
-				this.triangleUpperLeft));
+		assertEquals(1696, this.filter.calculateDifference(toData(original), toData(current),
+				this.triangleUpperLeft.ofColor(Color.WHITE)));
 	}
 
 	/**
@@ -188,7 +189,7 @@ public class IPDTrianglePictureFilterTest {
 
 		// transparent white
 		assertEquals(1536, this.filter.calculateDifference(toData(original), toData(current),
-				new Color(0xFFFFFFFF, true).getRGB(), this.triangleLowerLeft));
+				this.triangleLowerLeft.ofColor(0xFFFFFFFF)));
 	}
 
 	/**
@@ -199,8 +200,8 @@ public class IPDTrianglePictureFilterTest {
 	@Test
 	public void testAddToImageOverlap() {
 		BufferedImage img = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
-		this.filter.addToImage(img, this.triangleUpperLeft, Color.WHITE);
-		this.filter.addToImage(img, this.triangleLowerLeft, Color.WHITE);
+		this.filter.addToImage(img, this.triangleUpperLeft.ofColor(Color.WHITE));
+		this.filter.addToImage(img, this.triangleLowerLeft.ofColor(Color.WHITE));
 
 		BufferedImage expected = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
 		expected.setRGB(1, 1, 0x7F7F7F);
@@ -218,7 +219,7 @@ public class IPDTrianglePictureFilterTest {
 	@Test
 	public void testAddToImage() {
 		BufferedImage img = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
-		this.filter.addToImage(img, this.triangleUpperLeft, Color.WHITE);
+		this.filter.addToImage(img, this.triangleUpperLeft.ofColor(Color.WHITE));
 
 		BufferedImage expected = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
 		expected.setRGB(0, 0, 0x7F7F7F);
@@ -236,7 +237,7 @@ public class IPDTrianglePictureFilterTest {
 	public void testAddToImageAlpha() {
 		BufferedImage img = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
 		// transparent white
-		this.filter.addToImage(img, this.triangleUpperLeft, new Color(0xFFFFFFFF, true));
+		this.filter.addToImage(img, this.triangleUpperLeft.ofColor(0xFFFFFFFF));
 
 		BufferedImage expected = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
 		expected.setRGB(0, 0, 0x7F7F7F7F);
@@ -254,8 +255,8 @@ public class IPDTrianglePictureFilterTest {
 	public void testAddToImageOverlapAlpha() {
 		BufferedImage img = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
 		// transparent white
-		this.filter.addToImage(img, this.triangleUpperLeft, new Color(0xFFFFFFFF, true));
-		this.filter.addToImage(img, this.triangleLowerLeft, new Color(0xFFFFFFFF, true));
+		this.filter.addToImage(img, this.triangleUpperLeft.ofColor(0xFFFFFFFF));
+		this.filter.addToImage(img, this.triangleLowerLeft.ofColor(0xFFFFFFFF));
 
 		BufferedImage expected = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
 		expected.setRGB(1, 1, 0x7F7F7F7F);

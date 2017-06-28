@@ -8,7 +8,7 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import org.iMage.geometrify.TriangleGenerator;
+import org.iMage.geometrify.generators.TriangleGenerator;
 import org.junit.Before;
 import org.junit.Test;
 

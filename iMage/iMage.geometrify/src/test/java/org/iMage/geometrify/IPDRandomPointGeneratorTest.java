@@ -7,6 +7,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.awt.Point;
 
+import org.iMage.geometrify.generators.RandomPointGenerator;
 import org.junit.Before;
 import org.junit.Test;
 

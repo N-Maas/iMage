@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.iMage.geometrify.TriangleGenerator;
+import org.iMage.geometrify.generators.TriangleGenerator;
 import org.junit.Test;
 
 /**

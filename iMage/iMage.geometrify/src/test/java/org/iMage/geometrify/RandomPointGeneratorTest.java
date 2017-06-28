@@ -2,6 +2,7 @@ package org.iMage.geometrify;
 
 import java.awt.Point;
 
+import org.iMage.geometrify.generators.RandomPointGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
