@@ -73,14 +73,26 @@ public class BoundedPrimitiveGenerator implements BindablePrimitiveGenerator {
 		return this.y;
 	}
 
+	// TODO proper area calculation
 	@Override
 	public BoundedPrimitiveGenerator bindToArea(int x, int y, int width, int height) {
 		return new BoundedPrimitiveGenerator(this.genFactory, x, y, width, height, this.bounds);
 	}
 
+	// TODO proper area calculation
 	@Override
 	public BoundedPrimitiveGenerator bindToArea(int x, int y, int width, int height, Bounds bounds) {
 		return new BoundedPrimitiveGenerator(this.genFactory, x, y, width, height, bounds);
+	}
+
+	@Override
+	public BoundedPrimitiveGenerator rebind(int x, int y, int width, int height) {
+		return this.bindToArea(x, y, width, height);
+	}
+
+	@Override
+	public BoundedPrimitiveGenerator rebind(int x, int y, int width, int height, Bounds bounds) {
+		return this.bindToArea(x, y, width, height, bounds);
 	}
 
 }

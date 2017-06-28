@@ -12,4 +12,11 @@ public interface BindablePrimitiveGenerator extends PrimitiveGenerator {
 	}
 
 	BoundedPrimitiveGenerator bindToArea(int x, int y, int width, int height, Bounds bounds);
+
+	default BoundedPrimitiveGenerator rebind(int x, int y, int width, int height) {
+		return this.rebind(x, y, width, height, Bounds.NO_BOUNDS);
+
+	}
+
+	BoundedPrimitiveGenerator rebind(int x, int y, int width, int height, Bounds bounds);
 }

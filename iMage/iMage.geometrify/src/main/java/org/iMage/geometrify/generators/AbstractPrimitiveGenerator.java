@@ -18,6 +18,11 @@ public abstract class AbstractPrimitiveGenerator implements BindablePrimitiveGen
 		return new BoundedPrimitiveGenerator(this::createBy, genX, genY, genWidth, genHeight, bounds);
 	}
 
+	@Override
+	public BoundedPrimitiveGenerator rebind(int x, int y, int width, int height, Bounds bounds) {
+		return new BoundedPrimitiveGenerator(this::createBy, x, y, width, height, bounds);
+	}
+
 	protected abstract PrimitiveGenerator createBy(RandomPointGenerator generator);
 
 	@Override

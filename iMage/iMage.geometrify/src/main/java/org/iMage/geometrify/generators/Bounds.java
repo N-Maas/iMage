@@ -2,6 +2,7 @@ package org.iMage.geometrify.generators;
 
 import java.awt.Point;
 import java.util.Random;
+import java.util.function.IntFunction;
 
 public abstract class Bounds {
 	public static final Bounds NO_BOUNDS = new Bounds() {
@@ -67,11 +68,26 @@ public abstract class Bounds {
 		if (width < 2 || height < 2) {
 			throw new IllegalArgumentException("Illegal bounds.");
 		}
+		return fixedBounds(w -> Math.min(w, width), h -> Math.min(h, height));
+	}
+
+	public static Bounds relativeBounds(double size) {
+		return relativeBounds(size, size);
+	}
+
+	public static Bounds relativeBounds(double width, double height) {
+		if (width < 0 || width > 1 || height < 0 || height > 1) {
+			throw new IllegalArgumentException("Illegal bounds.");
+		}
+		return fixedBounds(w -> (int) Math.max((w * width), 2), h -> (int) Math.max((h * height), 2));
+	}
+
+	private static Bounds fixedBounds(IntFunction<Integer> widthFunction, IntFunction<Integer> heightFunction) {
 		return new Bounds() {
 			@Override
 			public RandomPointGenerator bind(int x, int y, int widthX, int heightY) {
-				int genHeight = Math.min(heightY, height);
-				int genWidth = Math.min(widthX, width);
+				int genWidth = widthFunction.apply(widthX);
+				int genHeight = heightFunction.apply(heightY);
 				RandomPointGenerator generator = new RandomPointGenerator(x, y, widthX - genWidth + 1,
 						heightY - genHeight + 1);
 				Point p = generator.nextPoint();
