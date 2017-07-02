@@ -170,6 +170,7 @@ public class GeneralIPrimitivePictureFilterTest {
 	 * saves the result and tests the size and alpha.
 	 */
 	@Test
+	@Ignore
 	public void applyAlphaTest() {
 		long start = System.currentTimeMillis();
 		PrimitiveGenerator gen = new PolygonGenerator(this.imageNoAlpha.getWidth(), this.imageNoAlpha.getHeight());

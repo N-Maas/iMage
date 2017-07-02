@@ -111,7 +111,7 @@ public class FrameView {
 		this.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		JCheckBox check = new JCheckBox("Continuous Updates");
-		LabeledSlider slider = new LabeledSlider("Snapshot", 0, iterations, 0, 0, 30, false);
+		LabeledSlider slider = new LabeledSlider("Snapshot", 0, iterations, 0, 0, 0, 30, false);
 		JButton save = new JButton("Save");
 		JPanel imagePanel = new JPanel() {
 			@Override

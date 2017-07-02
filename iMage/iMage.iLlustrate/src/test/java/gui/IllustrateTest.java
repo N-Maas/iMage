@@ -7,11 +7,13 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
-import org.iMage.geometrify.generators.TriangleGenerator;
+import org.iMage.geometrify.generators.Bounds;
+import org.iMage.geometrify.generators.PolygonGenerator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;;
@@ -47,7 +49,9 @@ public class IllustrateTest {
 	@Test
 	public void guiTest() throws InterruptedException {
 		SwingUtilities.invokeLater(() -> {
-			Illustrate il = new Illustrate((x, y) -> new TriangleGenerator(x, y));
+			Illustrate il = new Illustrate(
+					Collections.singletonList(SelectableType.create("Triangle", new PolygonGenerator(1, 1))),
+					Collections.singletonList(SelectableType.create("No bounds", Bounds.NO_BOUNDS)));
 			il.getFrame().addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent e) {

@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -12,11 +13,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -27,7 +31,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.iMage.geometrify.generators.PrimitiveGenerator;
+import org.iMage.geometrify.generators.BindablePrimitiveGenerator;
+import org.iMage.geometrify.generators.Bounds;
 
 import filter.ObservableTPFilter;
 
@@ -38,13 +43,13 @@ import filter.ObservableTPFilter;
  * @author Nikolai
  */
 public class Illustrate {
-	private static final String DEFAULT_IMG = "/Default.png";
-	private static final int ITERATIONS_MAX = 2000;
-	private static final int ITERATIONS_DEFAULT = 100;
-	private static final int SAMPLES_MAX = 200;
-	private static final int SAMPLES_DEFAULT = 30;
-	private static final int PREVIEW_WIDTH = 150;
-	private static final int PREVIEW_HEIGHT = 150;
+	private static final String DEFAULT_IMG = "/Default.jpg";
+	private static final int ITERATIONS_MAX = 4000;
+	private static final int ITERATIONS_DEFAULT = 200;
+	private static final int SAMPLES_MAX = 300;
+	private static final int SAMPLES_DEFAULT = 50;
+	private static final int PREVIEW_WIDTH = 225;
+	private static final int PREVIEW_HEIGHT = 225;
 	private static final int MAX_WIDTH = 1024;
 	private static final int MAX_HEIGHT = 768;
 
@@ -55,34 +60,43 @@ public class Illustrate {
 	private final LabeledSlider iterations;
 	private final LabeledSlider samples;
 	private final JFileChooser chooser;
-	private final BiFunction<Integer, Integer, PrimitiveGenerator> genFunction;
+	private final PrimitiveTypeChooser typeChooser;
 	private BufferedImage currentImage;
-	private String fileName = "Default.png";
+	private String fileName = "Default.jpg";
+
+	public Illustrate(List<SelectableType<BindablePrimitiveGenerator>> primitives,
+			List<SelectableType<Bounds>> bounds) {
+		this(f -> new PrimitiveTypeChooser(f, "Settings", primitives, bounds));
+	}
 
 	/**
 	 * Constructor that creates the gui and all needed listeners.
 	 */
-	public Illustrate(BiFunction<Integer, Integer, PrimitiveGenerator> genFunction) {
+	public Illustrate(Function<Frame, PrimitiveTypeChooser> chooserGenerator) {
 		this.executor = Executors.newSingleThreadExecutor();
 		this.frame = new JFrame("iLlustrate");
 
 		this.original = new JLabel();
-		this.original.setPreferredSize(new Dimension(150, 150));
+		this.original.setPreferredSize(new Dimension(PREVIEW_WIDTH, PREVIEW_HEIGHT));
 		this.preview = new JLabel();
-		this.preview.setPreferredSize(new Dimension(150, 150));
-		this.iterations = new LabeledSlider("Iterations", ITERATIONS_MAX, ITERATIONS_DEFAULT, 250, 10);
-		this.samples = new LabeledSlider("Samples", SAMPLES_MAX, SAMPLES_DEFAULT, 250, 10);
+		this.preview.setPreferredSize(new Dimension(PREVIEW_WIDTH, PREVIEW_HEIGHT));
+		this.iterations = new LabeledSlider("Iterations", ITERATIONS_MAX, ITERATIONS_DEFAULT, 150, 0, 10);
+		this.samples = new LabeledSlider("Samples", SAMPLES_MAX, SAMPLES_DEFAULT, 150, 0, 10);
 		this.chooser = new JFileChooser();
-		this.chooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
+		this.chooser.addChoosableFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "gif"));
+		this.chooser.addChoosableFileFilter(new FileNameExtensionFilter("JPG Images", "jpg"));
+		this.chooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
+		this.chooser.addChoosableFileFilter(new FileNameExtensionFilter("GIF Images", "gif"));
 		this.chooser.setAcceptAllFileFilterUsed(false);
-		this.genFunction = genFunction;
+		this.typeChooser = chooserGenerator.apply(this.frame);
 
 		JButton load = new JButton("Load");
+		JButton choose = new JButton("Settings");
 		JButton run = new JButton("Run");
 
-		this.setUpComponents(load, run);
+		this.setUpComponents(load, choose, run);
 
-		this.setUpLayout(load, run);
+		this.setUpLayout(load, choose, run);
 	}
 
 	/**
@@ -108,7 +122,7 @@ public class Illustrate {
 		this.preview.setIcon(null);
 		this.preview.setText("   Loading...   ");
 		ObservableTPFilter filter = new ObservableTPFilter(
-				this.genFunction.apply(preImg.getWidth(), preImg.getHeight()));
+				this.typeChooser.getPrimitiveGenerator(0, 0, preImg.getWidth(), preImg.getHeight()));
 		this.executor.submit(() -> {
 			BufferedImage preview = filter.apply(preImg, ITERATIONS_DEFAULT, SAMPLES_DEFAULT);
 			SwingUtilities.invokeLater(() -> {
@@ -153,9 +167,8 @@ public class Illustrate {
 		return dest;
 	}
 
-	private void setUpComponents(JButton load, JButton run) {
-		this.frame.setMinimumSize(new Dimension(400, 400));
-		this.frame.setResizable(false);
+	private void setUpComponents(JButton load, JButton choose, JButton run) {
+		this.frame.setMinimumSize(new Dimension(550, 475));
 		this.frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -165,6 +178,7 @@ public class Illustrate {
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		load.setPreferredSize(new Dimension(100, 40));
+		load.setMaximumSize(new Dimension(100, 40));
 		load.setFocusable(false);
 		load.setToolTipText("Loads a picture and shows a preview.");
 		load.addActionListener(e -> {
@@ -193,12 +207,25 @@ public class Illustrate {
 				}
 			}
 		});
+
+		choose.setPreferredSize(new Dimension(150, 40));
+		choose.setMaximumSize(new Dimension(150, 40));
+		choose.setFocusable(false);
+		choose.setToolTipText("Choose primitive and bounds settings.");
+		choose.addActionListener(e -> {
+			if (this.typeChooser.show()) {
+				this.setCurrentImage(this.currentImage);
+			}
+		});
+
 		run.setPreferredSize(new Dimension(100, 40));
+		run.setMaximumSize(new Dimension(100, 40));
 		run.setFocusable(false);
 		run.setToolTipText("Starts the calculation.");
 		run.addActionListener(e -> {
 			FrameView view = new FrameView(this.fileName, this.currentImage,
-					this.genFunction.apply(this.currentImage.getWidth(), this.currentImage.getHeight()),
+					this.typeChooser.getPrimitiveGenerator(0, 0, this.currentImage.getWidth(),
+							this.currentImage.getHeight()),
 					this.iterations.getValue(), this.samples.getValue(), this.chooser);
 			JFrame vFrame = view.getFrame();
 			vFrame.setLocationRelativeTo(this.frame);
@@ -216,36 +243,40 @@ public class Illustrate {
 		}
 	}
 
-	private void setUpLayout(JButton load, JButton run) {
+	private void setUpLayout(JButton load, JButton choose, JButton run) {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
 		c.insets = new Insets(5, 10, 5, 10);
 		c.fill = GridBagConstraints.NONE;
-		c.anchor = GridBagConstraints.CENTER;
+		c.anchor = GridBagConstraints.WEST;
 		c.weightx = 1;
 		c.weighty = 2;
+		c.gridwidth = 1;
 		panel.add(this.original, c);
-		c.gridx = 1;
+		c.anchor = GridBagConstraints.EAST;
+		c.gridx = GridBagConstraints.RELATIVE;
 		panel.add(this.preview, c);
 		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 2;
+		c.gridy = GridBagConstraints.RELATIVE;
+		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.weighty = 1;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.CENTER;
 		panel.add(this.iterations.getComponent(), c);
-		c.gridy = 2;
 		panel.add(this.samples.getComponent(), c);
-		c.gridy = 3;
-		c.anchor = GridBagConstraints.EAST;
-		c.fill = GridBagConstraints.NONE;
-		c.gridwidth = 1;
-		panel.add(load, c);
-		c.gridx = 1;
-		c.anchor = GridBagConstraints.WEST;
-		panel.add(run, c);
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(load);
+		buttonPanel.add(Box.createHorizontalStrut(20));
+		buttonPanel.add(choose);
+		buttonPanel.add(Box.createHorizontalStrut(20));
+		buttonPanel.add(run);
+		buttonPanel.add(Box.createHorizontalGlue());
+		panel.add(buttonPanel, c);
 		this.frame.add(panel);
 	}
 }

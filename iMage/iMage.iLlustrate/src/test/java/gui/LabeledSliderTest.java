@@ -16,7 +16,7 @@ public class LabeledSliderTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void minValueTest() {
-		LabeledSlider ls = new LabeledSlider("", 20, 80, 40, 0, 10, true);
+		LabeledSlider ls = new LabeledSlider("", 20, 80, 40, 0, 0, 10, true);
 		assertEquals(40, ls.getValue());
 		ls.setValue(0);
 	}
@@ -26,7 +26,7 @@ public class LabeledSliderTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void maxValueTest() {
-		LabeledSlider ls = new LabeledSlider("", 20, 200, 90, 0, 10, true);
+		LabeledSlider ls = new LabeledSlider("", 20, 200, 90, 0, 0, 10, true);
 		assertEquals(90, ls.getValue());
 		ls.setValue(220);
 	}
