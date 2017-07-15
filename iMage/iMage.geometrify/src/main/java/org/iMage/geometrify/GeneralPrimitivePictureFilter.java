@@ -64,10 +64,6 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 		int length = insidePoints.length / 2;
 		int result = (int) (blue / length) | ((int) (green / length) & GREEN) | ((int) (red / length) & RED)
 				| (((int) (alpha / length)) & ALPHA);
-		// System.out.println(" r:" + (red / insidePoints.length) + " g:" +
-		// (green / insidePoints.length) + "b :"
-		// + (blue / insidePoints.length));
-		// System.out.println("RET " + new Color(result));
 		return result;
 
 	}
@@ -143,12 +139,20 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 
 	}
 
+	/**
+	 * Placeholder method to enable making the filter observable.
+	 * 
+	 * @param newData
+	 *            image data
+	 * @param primitive
+	 *            added primitive
+	 */
 	protected void processIteration(int[][] newData, ColoredPrimitive primitive) {
 	}
 
 	/*
-	 * This method performance-optimized by firstly not copying the picture and
-	 * inserting the primitive, but directly calculating the difference.
+	 * This method is performance-optimized by firstly not copying the picture
+	 * and inserting the primitive, but directly calculating the difference.
 	 * Secondly, the difference is calculated relative to the difference of the
 	 * current image (current difference = 0). This reduces the calculation
 	 * effort to the bounding box. Therefore, most results are probably
@@ -159,23 +163,7 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 	 * java.awt.image.BufferedImage, java.awt.image.BufferedImage,
 	 * org.iMage.geometrify.IPrimitive)
 	 */
-
-	// private int calculateDifference(BufferedImage original, BufferedImage
-	// current, Color color, IPrimitive primitive) {
-	// List<Point> insidePoints = primitive.getInsidePoints();
-	// boolean hasAlpha = original.getColorModel().hasAlpha();
-	// int difference = 0;
-	// for (Point p : insidePoints) {
-	// Color orgColor = new Color(original.getRGB(p.x, p.y), hasAlpha);
-	// Color oldColor = new Color(current.getRGB(p.x, p.y), hasAlpha);
-	// Color newColor = colorAverage(color, oldColor, this.opaque);
-	// difference += colorDifference(orgColor, newColor) -
-	// colorDifference(orgColor, oldColor);
-	// }
-	// return difference;
-	// }
-
-	public int calculateDifference(int[][] orgData, int[][] newData, ColoredPrimitive primitive) {
+	protected int calculateDifference(int[][] orgData, int[][] newData, ColoredPrimitive primitive) {
 		int[] insidePoints = primitive.getInsidePoints();
 		int rgb = primitive.getColor().getRGB();
 		int difference = 0;
@@ -198,15 +186,6 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 		}
 	}
 
-	// private static Color colorAverage(Color orgC, Color newC, float opaque) {
-	// float inverse = 1 - opaque;
-	// int red = (int) (orgC.getRed() * inverse + newC.getRed() * opaque);
-	// int green = (int) (orgC.getGreen() * inverse + newC.getGreen() * opaque);
-	// int blue = (int) (orgC.getBlue() * inverse + newC.getBlue() * opaque);
-	// int alpha = (int) (orgC.getAlpha() * inverse + newC.getAlpha() * opaque);
-	// return new Color(red, green, blue, alpha);
-	// }
-
 	private static int colorAverage(int orgC, int newC, float opaque) {
 		float inverse = 1 - opaque;
 		int blue = (int) ((orgC & BLUE) * inverse + (newC & BLUE) * opaque);
@@ -217,14 +196,6 @@ public class GeneralPrimitivePictureFilter implements PrimitivePictureFilter {
 		return blue | green | red | alpha;
 
 	}
-
-	// public static int colorDifference(Color a, Color b) {
-	// int red = Math.abs(a.getRed() - b.getRed());
-	// int green = Math.abs(a.getGreen() - b.getGreen());
-	// int blue = Math.abs(a.getBlue() - b.getBlue());
-	// int alpha = Math.abs(a.getAlpha() - b.getAlpha());
-	// return red + green + blue + alpha;
-	// }
 
 	private static int colorDifference(int a, int b) {
 		int blue = Math.abs((a & BLUE) - (b & BLUE));

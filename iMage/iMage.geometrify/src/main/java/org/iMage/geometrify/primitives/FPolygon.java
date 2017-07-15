@@ -55,6 +55,7 @@ public class FPolygon extends AbstractPrimitive {
 			Arrays.fill(flags[i], (byte) 0);
 		}
 
+		// draws "lines" from point to point
 		Point last = this.points.get(this.points.size() - 1);
 		for (Point p : this.points) {
 			Point up = last.y < p.y ? last : p;
@@ -64,13 +65,13 @@ public class FPolygon extends AbstractPrimitive {
 			int dX = down.x - up.x;
 			int height = down.y - up.y;
 
-			flags[upX][minY]++;
-			for (int i = 1; i < height; i++) {
+			for (int i = 0; i < height; i++) {
 				flags[upX + (int) Math.round((double) (dX * i) / height)][minY + i]++;
 			}
 			last = p;
 		}
 
+		// iterates through the pixels and "fills" the polygon
 		int[] puffer = new int[2 * this.getWidth() * this.getHeight()];
 		int counter = 0;
 		for (int y = 0; y < this.getHeight(); y++) {
@@ -93,5 +94,10 @@ public class FPolygon extends AbstractPrimitive {
 		}
 
 		return Arrays.copyOf(puffer, counter);
+	}
+
+	@Override
+	public String toString() {
+		return "FPolygon[" + this.points + "]";
 	}
 }
