@@ -86,13 +86,13 @@ public abstract class AbstractPrimitive implements Primitive {
 		if (this.insideFlags == null) {
 			this.insideFlags = this.calculateFlags();
 		}
-		return this.insideFlags[x].get(y);
+		return this.insideFlags[x - this.getMinX()].get(y - this.getMinY());
 	}
 
 	@Override
 	public boolean isInsideBounds(int x, int y) {
-		return x < this.getMinX() || x >= this.getMinX() + this.getWidth() || y < this.getMinY()
-				|| y >= this.getMinY() + this.getHeight();
+		return !(x < this.getMinX() || x >= this.getMinX() + this.getWidth() || y < this.getMinY()
+				|| y >= this.getMinY() + this.getHeight());
 	}
 
 	@Override
@@ -118,13 +118,13 @@ public abstract class AbstractPrimitive implements Primitive {
 	protected abstract int[] calculatePoints();
 
 	protected BitSet[] calculateFlags() {
-		BitSet[] result = new BitSet[this.getHeight()];
+		BitSet[] result = new BitSet[this.getWidth()];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = new BitSet(this.getWidth());
+			result[i] = new BitSet(this.getHeight());
 		}
 		int[] points = this.getInsidePoints();
 		for (int i = 0; i < points.length; i += 2) {
-			result[points[i]].set(points[i + 1]);
+			result[points[i] - this.getMinX()].set(points[i + 1] - this.getMinY());
 		}
 		return result;
 	}
